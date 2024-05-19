@@ -4,13 +4,13 @@ include("config.php");
 session_start();
 
 if (isset($_POST['submit'])) {
-    $email = $_POST['email'];
+    $uniqueID = $_POST['unique_id'];
     $password = $_POST['password'];
 
     // SQL query to check user credentials and retrieve role
-    $sql = "SELECT UserID, Role FROM Users WHERE email = ? AND Password = ?";
+    $sql = "SELECT UserID, Role FROM Users WHERE UniqueID = ? AND Password = ?";
     $stmt = $conn->prepare($sql);
-    $stmt->bind_param("ss", $email, $password);
+    $stmt->bind_param("ss", $uniqueID, $password);
     $stmt->execute();
     $result = $stmt->get_result();
 
@@ -37,7 +37,7 @@ if (isset($_POST['submit'])) {
                 exit();
         }
     } else {
-        echo "Invalid username or password.";
+        echo "Invalid unique ID or password.";
     }
 }
 ?>
@@ -197,8 +197,8 @@ if (isset($_POST['submit'])) {
                 <h2>LOGIN</h2>
                 <form id="login-form" method="post">
                     <div class="input-field">
-                        <input type="text" name="email" required>
-                        <label>Email</label>
+                        <input type="text" name="unique_id" required>
+                        <label>ID</label>
                     </div>
                     <div class="input-field">
                         <input type="password" name="password" required>

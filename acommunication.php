@@ -22,6 +22,10 @@ if(isset($_SESSION['UserID'])) {
     $profileImage = "default-profile-image.jpg";
 }
 
+?>
+<?php
+include("config.php");
+
 // Check if the user is logged in
 if (!isset($_SESSION['UserID'])) {
     header("Location: index.php");
@@ -216,9 +220,9 @@ $stmt->close();
     </section>
     
     <section class="container">
-        <nav class="side">
+    <nav class="side">
             <div class="sidebar">
-                <div class="side-logo">
+            <div class="side-logo">
                     <img src="<?php echo $profileImage; ?>" alt="Profile Image" class="profile-img-sidebar">
                     <?php
                     // Fetch the user's full name from the database based on UserID stored in the session
@@ -234,30 +238,55 @@ $stmt->close();
                     ?>
                     <h1><?php echo $fullName; ?></h1>
                 </div>
-                <ul>
-                    <li><a href="dashboardfaculty.php">
-                            <i class="fa-solid fa-gauge"></i>
-                            <span class="nav-item">Dashboard</span>
-                        </a>
+            <ul>
+                    <li><a href="dashboardadmin.php">
+                        <i class="fa-solid fa-gauge"></i>
+                        <span class="nav-item">Dashboard</span>
+                    </a>
                     </li>
-                    <li><a href="fdocuments.php">
-                            <i class="fa-solid fa-user-graduate"></i>
-                            <span class="nav-item">Documents</span>
-                        </a>
+                    <li><a href="user.php">
+                        <i class="fa-solid fa-gear"></i>
+                        <span class="nav-item">Users</span>
+                    </a>
                     </li>
-                    <li><a href="ftasks.php">
-                            <i class="fa-solid fa-file"></i>
-                            <span class="nav-item">Tasks</span>
-                        </a>
+                    <li><a href="campus.php">
+                        <i class="fa-solid fa-user-graduate"></i>
+                        <span class="nav-item">Campuses</span>
+                    </a>
                     </li>
-                    <li><a href="fcommunication.php">
-                            <i class="fa-solid fa-bell"></i>
-                            <span class="nav-item">Communication</span>
-                        </a>
+                    <li><a href="departments.php">
+                        <i class="fa-solid fa-file"></i>
+                        <span class="nav-item">Departments  </span>
+                    </a>
+                    </li>
+                    <li><a href="program.php">
+                        <i class="fa-solid fa-bell"></i>
+                        <span class="nav-item">Programs</span>
+                    </a>
+                    </li>
+                    <li><a href="visits.php">
+                        <i class="fa-solid fa-user"></i>
+                        <span class="nav-item">Visits</span>
+                    </a>
+                    </li>
+                    <li><a href="documents.php">
+                        <i class="fa-solid fa-user"></i>
+                        <span class="nav-item">Documents</span>
+                    </a>
+                    </li>
+                    <li><a href="tasks.php">
+                        <i class="fa-solid fa-user"></i>
+                        <span class="nav-item">Tasks</span>
+                    </a>
+                    </li>
+                    <li><a href="acommunication.php">
+                        <i class="fa-solid fa-user"></i>
+                        <span class="nav-item">Communication</span>
+                    </a>
                     </li>
                 </ul>
-            </div>
-        </nav>
+        </div>
+    </nav>
     <div class="main">
         <div class="main-title">
             <i class="fa-solid fa-gauge"></i>

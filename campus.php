@@ -1,3 +1,29 @@
+<?php
+session_start(); // Start session
+
+include("config.php");
+
+// Check if the user is logged in before accessing session variables
+if(isset($_SESSION['UserID'])) {
+    // Fetch the user's last name and profile image from the database based on the user's ID stored in the session
+    $userId = $_SESSION['UserID'];
+    $query = "SELECT lastName, img FROM users WHERE UserID = ?";
+    $stmt = $conn->prepare($query);
+    $stmt->bind_param("i", $userId);
+    $stmt->execute();
+    $stmt->bind_result($lastName, $profileImage);
+    $stmt->fetch();
+    $stmt->close();
+} else {
+    // Handle case where user is not logged in or session is not set
+    // You can redirect the user to the login page or handle it based on your application logic
+    // For now, let's set $lastName to an empty string and $profileImage to a default image path
+    $lastName = "Loko na";
+    $profileImage = "default-profile-image.jpg";
+}
+
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -129,17 +155,17 @@
         </div>
         <div class="profile-dropdown">
             <div onclick="toggle()" class="profile-dropdown-btn">
-                <div class="profile-img">
+                <div class="profile-img" style="background-image: url(<?php echo $profileImage; ?>);">
                     <i class="fa-solid fa-circle"></i>
                 </div>
                 <span>
-                    Jamis
+                    <?php echo $lastName; ?>
                     <i class="fa-solid fa-angle-down"></i>
                 </span>
             </div>
             <ul class="profile-dropdown-list">
                 <li class="profile-dropdown-list-item">
-                    <a href="#">
+                    <a href="edit_profile.php">
                         <i class="fa-regular fa-user"></i>
                         Edit Profile
                     </a>
@@ -158,15 +184,28 @@
                 </li>
             </ul>
         </div>
+
     </nav>
     </section>
     
     <section class="container">
-        <nav class="side">
+    <nav class="side">
             <div class="sidebar">
-                <div class="side-logo">
-                <img src="images/avatar.jpg">
-                <h1>admin</h1>
+            <div class="side-logo">
+                    <img src="<?php echo $profileImage; ?>" alt="Profile Image" class="profile-img-sidebar">
+                    <?php
+                    // Fetch the user's full name from the database based on UserID stored in the session
+                    $userId = $_SESSION['UserID'];
+                    $query = "SELECT firstName, lastName FROM users WHERE UserID = ?";
+                    $stmt = $conn->prepare($query);
+                    $stmt->bind_param("i", $userId);
+                    $stmt->execute();
+                    $stmt->bind_result($firstName, $lastName);
+                    $stmt->fetch();
+                    $fullName = $firstName . " " . $lastName; // Concatenate first name and last name
+                    $stmt->close();
+                    ?>
+                    <h1><?php echo $fullName; ?></h1>
                 </div>
                 <ul>
                     <li><a href="dashboardadmin.php">
@@ -248,6 +287,34 @@
                 <div class="main-content">
                     <div class="table-container">
                     <input type="text" id="searchInput" placeholder="Search...">
+                    <button onclick="toggleAddForm()">Add Campus</button>
+                    <div id="add-campus-form" class="modal">
+                        <div class="modal-content">
+                            <span class="close" onclick="closeAddForm()">×</span>
+                            <h2>Add New Campus</h2>
+                            <form action="add_campus.php" method="post">
+                                <label for="campus-name">Campus Name:</label>
+                                <input type="text" id="campus-name" name="campus_name" required>
+                                <label for="campus-location">Location:</label>
+                                <input type="text" id="campus-location" name="campus_location" required>
+                                <label for="contact-info">Contact Information:</label>
+                                <input type="text" id="contact-info" name="contact_info" required>
+                                <button type="submit" name="add_campus">Add Campus</button>
+                            </form>
+
+                            <form id="edit-form" action="edit_campus.php" method="post">
+                                <input type="hidden" id="edit-campus-id" name="campus_id">
+                                <input type="hidden" name="action" value="edit_campus">
+                                <label for="edit-campus-name">New Campus Name:</label>
+                                <input type="text" id="edit-campus-name" name="campus_name" required>
+                                <label for="edit-campus-location">New Location:</label>
+                                <input type="text" id="edit-campus-location" name="campus_location" required>
+                                <label for="edit-contact-info">New Contact Information:</label>
+                                <input type="text" id="edit-contact-info" name="contact_info" required>
+                                <button type="submit">Save Changes</button>
+                            </form>
+                        </div>
+                    </div>
                         <table id="dataTable">
                         <thead>
                             <tr>
@@ -298,44 +365,42 @@
         </div>
     </section>
     <script>
+        // Function to toggle visibility of the add campus form
+        function toggleAddForm() {
+            var addCampusForm = document.getElementById("add-campus-form");
+            addCampusForm.style.display = "block";
+        }
+
+        function closeAddForm() {
+            var addCampusForm = document.getElementById("add-campus-form");
+            addCampusForm.style.display = "none";
+        }
+
         // Function to prompt user for confirmation before deletion
-        function confirmDelete(code) {
-            var confirmDelete = confirm("Are you sure you want to delete this program?");
+        function confirmDelete(universityID) {
+            var confirmDelete = confirm("Are you sure you want to delete this campus?");
             if (confirmDelete) {
-                // If user confirms, redirect to delete_program.php with program code
-                window.location.href = "delete_program.php?code=" + code;
+                // If user confirms, redirect to delete_campus.php with university ID
+                window.location.href = "delete_campus.php?universityID=" + universityID;
             }
         }
 
-        // Function to toggle visibility of the edit program form
-        function toggleEditForm(studentID, fullName, email, program, currentYear) {
-            var editProgramForm = document.getElementById("edit-program-form");
-            editProgramForm.style.display = "block";
-            
-            // Populate hidden field with studentID
-            var editIDField = document.getElementById("edit-student-id");
-            editIDField.value = studentID;
-            
-            // Populate input fields with current values
-            var editFullNameField = document.getElementById("edit-full-name");
-            editFullNameField.value = fullName;
-            
-            var editEmailField = document.getElementById("edit-email");
-            editEmailField.value = email;
-            
-            var editProgramField = document.getElementById("edit-program");
-            editProgramField.value = program;
-            
-            var editYearField = document.getElementById("edit-year");
-            editYearField.value = currentYear;
+        // Function to toggle visibility of the edit campus form and populate data
+        function editRow(campusID, campusName, location, contactInfo) {
+            var editForm = document.getElementById("edit-campus-form");
+            editForm.style.display = "block";
+
+            // Populate form fields with current data
+            document.getElementById("edit-campus-id").value = campusID;
+            document.getElementById("edit-campus-name").value = campusName;
+            document.getElementById("edit-campus-location").value = location;
+            document.getElementById("edit-contact-info").value = contactInfo;
         }
 
         function closeEditForm() {
-            var editProgramForm = document.getElementById("edit-program-form");
-            editProgramForm.style.display = "none";
+            var editForm = document.getElementById("edit-campus-form");
+            editForm.style.display = "none";
         }
-    </script>
-    <script>
         function searchTable() {
             // Declare variables
             var input, filter, table, tr, td, i, txtValue;

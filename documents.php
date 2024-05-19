@@ -1,3 +1,28 @@
+<?php
+session_start(); // Start session
+
+include("config.php");
+
+// Check if the user is logged in before accessing session variables
+if(isset($_SESSION['UserID'])) {
+    // Fetch the user's last name and profile image from the database based on the user's ID stored in the session
+    $userId = $_SESSION['UserID'];
+    $query = "SELECT lastName, img FROM users WHERE UserID = ?";
+    $stmt = $conn->prepare($query);
+    $stmt->bind_param("i", $userId);
+    $stmt->execute();
+    $stmt->bind_result($lastName, $profileImage);
+    $stmt->fetch();
+    $stmt->close();
+} else {
+    // Handle case where user is not logged in or session is not set
+    // You can redirect the user to the login page or handle it based on your application logic
+    // For now, let's set $lastName to an empty string and $profileImage to a default image path
+    $lastName = "Loko na";
+    $profileImage = "default-profile-image.jpg";
+}
+
+?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -129,17 +154,17 @@
         </div>
         <div class="profile-dropdown">
             <div onclick="toggle()" class="profile-dropdown-btn">
-                <div class="profile-img">
+                <div class="profile-img" style="background-image: url(<?php echo $profileImage; ?>);">
                     <i class="fa-solid fa-circle"></i>
                 </div>
                 <span>
-                    Jamis
+                    <?php echo $lastName; ?>
                     <i class="fa-solid fa-angle-down"></i>
                 </span>
             </div>
             <ul class="profile-dropdown-list">
                 <li class="profile-dropdown-list-item">
-                    <a href="#">
+                    <a href="edit_profile.php">
                         <i class="fa-regular fa-user"></i>
                         Edit Profile
                     </a>
@@ -158,15 +183,28 @@
                 </li>
             </ul>
         </div>
+
     </nav>
     </section>
     
     <section class="container">
-        <nav class="side">
+    <nav class="side">
             <div class="sidebar">
-                <div class="side-logo">
-                <img src="images/avatar.jpg">
-                <h1>admin</h1>
+            <div class="side-logo">
+                    <img src="<?php echo $profileImage; ?>" alt="Profile Image" class="profile-img-sidebar">
+                    <?php
+                    // Fetch the user's full name from the database based on UserID stored in the session
+                    $userId = $_SESSION['UserID'];
+                    $query = "SELECT firstName, lastName FROM users WHERE UserID = ?";
+                    $stmt = $conn->prepare($query);
+                    $stmt->bind_param("i", $userId);
+                    $stmt->execute();
+                    $stmt->bind_result($firstName, $lastName);
+                    $stmt->fetch();
+                    $fullName = $firstName . " " . $lastName; // Concatenate first name and last name
+                    $stmt->close();
+                    ?>
+                    <h1><?php echo $fullName; ?></h1>
                 </div>
                 <ul>
                     <li><a href="dashboardadmin.php">

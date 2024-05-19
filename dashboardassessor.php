@@ -29,7 +29,7 @@ if(isset($_SESSION['UserID'])) {
 <head>
 <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Dashboard</title>
+    <title>Assessor Dashboard</title>
     <link rel="stylesheet" href="style.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -204,7 +204,7 @@ if(isset($_SESSION['UserID'])) {
         </div>
         <div class="profile-dropdown">
             <div onclick="toggle()" class="profile-dropdown-btn">
-                <div class="profile-img">
+                <div class="profile-img" style="background-image: url(<?php echo $profileImage; ?>);">
                     <i class="fa-solid fa-circle"></i>
                 </div>
                 <span>
@@ -214,7 +214,7 @@ if(isset($_SESSION['UserID'])) {
             </div>
             <ul class="profile-dropdown-list">
                 <li class="profile-dropdown-list-item">
-                    <a href="#">
+                    <a href="edit_profile.php">
                         <i class="fa-regular fa-user"></i>
                         Edit Profile
                     </a>
@@ -239,8 +239,8 @@ if(isset($_SESSION['UserID'])) {
     <section class="container">
         <nav class="side">
             <div class="sidebar">
-                <div class="side-logo">
-                    <img src="images/avatar.jpg">
+            <div class="side-logo">
+                    <img src="<?php echo $profileImage; ?>" alt="Profile Image" class="profile-img-sidebar">
                     <?php
                     // Fetch the user's full name from the database based on UserID stored in the session
                     $userId = $_SESSION['UserID'];
@@ -256,7 +256,7 @@ if(isset($_SESSION['UserID'])) {
                     <h1><?php echo $fullName; ?></h1>
                 </div>
                 <ul>
-                    <li><a href="dashboardfaculty.php">
+                    <li><a href="dashboardassessor.php">
                             <i class="fa-solid fa-gauge"></i>
                             <span class="nav-item">Dashboard</span>
                         </a>
@@ -271,7 +271,7 @@ if(isset($_SESSION['UserID'])) {
                             <span class="nav-item">Tools</span>
                         </a>
                     </li>
-                    <li><a href="fcommunication.php">
+                    <li><a href="scommunication.php">
                             <i class="fa-solid fa-bell"></i>
                             <span class="nav-item">Communication</span>
                         </a>
@@ -283,7 +283,7 @@ if(isset($_SESSION['UserID'])) {
                     </li>
                     <li><a href="fcommunication.php">
                             <i class="fa-solid fa-bell"></i>
-                            <span class="nav-item">Taska</span>
+                            <span class="nav-item">Tasks</span>
                         </a>
                     </li>
                 </ul>
@@ -302,7 +302,7 @@ if(isset($_SESSION['UserID'])) {
                 </div>
             </div>
             <div class="directory">
-                <p><a href="dashboarduser.php">Dashboard</a> > Assessor Dashboard</p>
+                <p><a href="dashboardassessor.php">Dashboard</a> > Assessor Dashboard</p>
             </div>
             
             <div class="abouts">

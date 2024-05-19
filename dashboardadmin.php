@@ -5,27 +5,32 @@ include("config.php");
 
 // Check if the user is logged in before accessing session variables
 if(isset($_SESSION['UserID'])) {
-    // Fetch the user's last name from the database based on the user's ID stored in the session
+    // Fetch the user's last name and profile image from the database based on the user's ID stored in the session
     $userId = $_SESSION['UserID'];
-    $query = "SELECT lastName FROM users WHERE UserID = ?";
+    $query = "SELECT lastName, img FROM users WHERE UserID = ?";
     $stmt = $conn->prepare($query);
     $stmt->bind_param("i", $userId);
     $stmt->execute();
-    $stmt->bind_result($lastName);
+    $stmt->bind_result($lastName, $profileImage);
     $stmt->fetch();
     $stmt->close();
 } else {
+    // Handle case where user is not logged in or session is not set
+    // You can redirect the user to the login page or handle it based on your application logic
+    // For now, let's set $lastName to an empty string and $profileImage to a default image path
     $lastName = "Loko na";
+    $profileImage = "default-profile-image.jpg";
 }
 
 ?>
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
 <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Dashboard</title>
+    <title>Faculty Dashboard</title>
     <link rel="stylesheet" href="style.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -34,9 +39,12 @@ if(isset($_SESSION['UserID'])) {
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.2/css/fontawesome.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" 
         crossorigin="anonymous" referrerpolicy="no-referrer"/>
-        <link rel="shortcut icon" href="images/logo coe.png" type="image/x-icon">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <style>
+    <link rel="shortcut icon" href="images/logo coe.png" type="image/x-icon">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/5.10.0/main.min.css" rel="stylesheet">
+    <!-- Chart.js CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.0/chart.min.css">
+        <style>
         .main {
             width: 100%;
             background-color: grey;
@@ -45,6 +53,10 @@ if(isset($_SESSION['UserID'])) {
             display: flex;
             margin: 20px;
             align-items: center;
+        }
+        .main-flex {
+            display: flex;
+            justify-content: space-between;
         }
         .main-title h2 {
             margin-left: 10px;
@@ -96,6 +108,40 @@ if(isset($_SESSION['UserID'])) {
             margin-top: 50px;
             margin-bottom: 10px;
         }
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgb(0,0,0);
+            background-color: rgba(0,0,0,0.4);
+        }
+
+        .modal-content {
+            background-color: #fefefe;
+            margin: 15% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+        }
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
         .main-content {
             margin: 5%;
             background-color: whitesmoke;
@@ -139,9 +185,6 @@ if(isset($_SESSION['UserID'])) {
         #three {
             background-color: #f39c12;
         }
-        #four {
-            background-color: #dd4b39;
-        }
         #one i {
             color: #0083a3;
         }
@@ -151,41 +194,7 @@ if(isset($_SESSION['UserID'])) {
         #three i {
             color: #b06f09;
         }
-        #four i {
-            color: #ac2d1e;
-        }
-        .profile-dropdown-list {
-            display: none;
-            position: absolute;
-            background-color: white;
-            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
-            z-index: 1;
-            list-style: none;
-            padding: 0;
-            margin: 0;
-            width: 150px;
-        }
-        .profile-dropdown-list.show {
-            display: block;
-        }
-        .profile-dropdown-list-item {
-            padding: 10px;
-        }
-        .profile-dropdown-list-item a {
-            text-decoration: none;
-            color: black;
-            display: block;
-        }
-        .profile-dropdown-list-item a:hover {
-            background-color: #ddd;
-        }
-        .profile-dropdown {
-            position: relative;
-            display: inline-block;
-        }
-        .profile-dropdown-btn {
-            cursor: pointer;
-        }
+        
     </style>
 </head>
 
@@ -199,7 +208,7 @@ if(isset($_SESSION['UserID'])) {
         </div>
         <div class="profile-dropdown">
             <div onclick="toggle()" class="profile-dropdown-btn">
-                <div class="profile-img">
+                <div class="profile-img" style="background-image: url(<?php echo $profileImage; ?>);">
                     <i class="fa-solid fa-circle"></i>
                 </div>
                 <span>
@@ -209,7 +218,7 @@ if(isset($_SESSION['UserID'])) {
             </div>
             <ul class="profile-dropdown-list">
                 <li class="profile-dropdown-list-item">
-                    <a href="#">
+                    <a href="edit_profile.php">
                         <i class="fa-regular fa-user"></i>
                         Edit Profile
                     </a>
@@ -228,15 +237,28 @@ if(isset($_SESSION['UserID'])) {
                 </li>
             </ul>
         </div>
+
     </nav>
     </section>
     
     <section class="container">
-        <nav class="side">
+    <nav class="side">
             <div class="sidebar">
-                <div class="side-logo">
-                <img src="images/avatar.jpg">
-                <h1>admin</h1>
+            <div class="side-logo">
+                    <img src="<?php echo $profileImage; ?>" alt="Profile Image" class="profile-img-sidebar">
+                    <?php
+                    // Fetch the user's full name from the database based on UserID stored in the session
+                    $userId = $_SESSION['UserID'];
+                    $query = "SELECT firstName, lastName FROM users WHERE UserID = ?";
+                    $stmt = $conn->prepare($query);
+                    $stmt->bind_param("i", $userId);
+                    $stmt->execute();
+                    $stmt->bind_result($firstName, $lastName);
+                    $stmt->fetch();
+                    $fullName = $firstName . " " . $lastName; // Concatenate first name and last name
+                    $stmt->close();
+                    ?>
+                    <h1><?php echo $fullName; ?></h1>
                 </div>
                 <ul>
                     <li><a href="dashboardadmin.php">
@@ -279,7 +301,7 @@ if(isset($_SESSION['UserID'])) {
                         <span class="nav-item">Tasks</span>
                     </a>
                     </li>
-                    <li><a href="fcommunication.php">
+                    <li><a href="acommunication.php">
                         <i class="fa-solid fa-user"></i>
                         <span class="nav-item">Communication</span>
                     </a>
@@ -288,45 +310,133 @@ if(isset($_SESSION['UserID'])) {
             </div>
         </nav>
 
+        
         <div class="main">
-            <div class="main-title">
-                <i class="fa-solid fa-gauge"></i>
-                <h2>Dashboard</h2>
+            <div class="main-flex">
+                <div class="main-title">
+                    <i class="fa-solid fa-gauge"></i>
+                    <h2>Faculty Dashboard</h2>
+                </div>
+                <div class="main-title">
+                    <i class="fa-solid fa-bell"  style="margin-right: 50px; font-size:x-large"></i>
+                </div>
             </div>
-
+            <div class="directory">
+                <p><a href="dashboarduser.php">Dashboard</a> > Faculty Dashboard</p>
+            </div>
+            
             <div class="abouts">
-                <div class="main-item" id="one">
-                    <div class="main-info">
-                        <h5>Visits this Month</h5>
-                        <h2>69</h2>
-                    </div>
-                    <i class="fa-solid fa-user-graduate"></i>
+            <?php
+                include("config.php");
+
+                // Retrieve current accreditation status
+                $query = "SELECT accreditationLevel FROM programs";
+                $result = $conn->query($query);
+                $row = $result->fetch_assoc();
+                $currentAccreditationStatus = $row['accreditationLevel'];
+
+                // Retrieve pending tasks count
+                $query = "SELECT COUNT(*) AS total FROM tasks WHERE Status = 'Pending'";
+                $result = $conn->query($query);
+                $row = $result->fetch_assoc();
+                $pendingTasks = $row['total'];
+
+                // Retrieve completed tasks count
+                $query = "SELECT COUNT(*) AS total FROM tasks WHERE Status = 'Completed'";
+                $result = $conn->query($query);
+                $row = $result->fetch_assoc();
+                $completedTasks = $row['total'];
+            ?>
+            <div class="main-item" id="one">
+                <div class="main-info">
+                    <h5>Current Accreditation Status</h5>
+                    <h2><?php echo $currentAccreditationStatus; ?></h2>
                 </div>
-                <div class="main-item" id="two">
-                    <div class="main-info">
-                        <h5>Pending Tasks</h5>
-                        <h2>69</h2>
-                    </div>
-                    <i class="fa-solid fa-bell"></i>
-                </div>
-                <div class="main-item" id="three">
-                    <div class="main-info">
-                        <h5>Tasks completed</h5>
-                        <h2>69</h2>
-                    </div>
-                    <i class="fa-solid fa-hourglass-half"></i>
-                </div>
+                <i class="fa-solid fa-user-graduate"></i>
             </div>
 
-            <div class="main-content">
-                <div class="button-bar">
-                    <input type="text" id="search-bar" placeholder="Search...">
+            <div class="main-item" id="two">
+                <div class="main-info">
+                    <h5>Pending Tasks</h5>
+                    <h2><?php echo $pendingTasks; ?></h2>
                 </div>
-                
+                <i class="fa-solid fa-bell"></i>
+            </div>
+
+            <div class="main-item" id="three">
+                <div class="main-info">
+                    <h5>Completed Tasks</h5>
+                    <h2><?php echo $completedTasks; ?></h2>
+                </div>
+                <i class="fa-solid fa-hourglass-half"></i>
             </div>
         </div>
-    </section>
+            <div class="main-content">
+                <div id="calendar"></div>
+
+                <!-- Graph -->
+                <canvas id="myChart"></canvas>
+            </div>
+        </div>
     
 </body>
+<script>
+    // Initialize FullCalendar
+    document.addEventListener('DOMContentLoaded', function() {
+        var calendarEl = document.getElementById('calendar');
+        var calendar = new FullCalendar.Calendar(calendarEl, {
+            // Configure calendar options here
+            // Example: initialView: 'dayGridMonth'
+        });
+        calendar.render();
+    });
+
+    // Initialize Chart.js
+    document.addEventListener('DOMContentLoaded', function() {
+        var ctx = document.getElementById('myChart').getContext('2d');
+        var myChart = new Chart(ctx, {
+            type: 'bar', // Change the chart type as needed (e.g., 'bar', 'line', 'pie')
+            data: {
+                labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
+                datasets: [{
+                    label: 'Sample Data',
+                    data: [12, 19, 3, 5, 2, 3, 7], // Replace with your actual data
+                    backgroundColor: [
+                        'rgba(255, 99, 132, 0.2)',
+                        'rgba(54, 162, 235, 0.2)',
+                        'rgba(255, 206, 86, 0.2)',
+                        'rgba(75, 192, 192, 0.2)',
+                        'rgba(153, 102, 255, 0.2)',
+                        'rgba(255, 159, 64, 0.2)',
+                        'rgba(255, 99, 132, 0.2)'
+                    ],
+                    borderColor: [
+                        'rgba(255, 99, 132, 1)',
+                        'rgba(54, 162, 235, 1)',
+                        'rgba(255, 206, 86, 1)',
+                        'rgba(75, 192, 192, 1)',
+                        'rgba(153, 102, 255, 1)',
+                        'rgba(255, 159, 64, 1)',
+                        'rgba(255, 99, 132, 1)'
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    });
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/5.10.0/main.min.js"></script>
+
+    <!-- Chart.js JavaScript -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.0/chart.min.js"></script>
+
 <script src="script.js"></script>
 </html>

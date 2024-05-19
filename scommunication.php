@@ -1,26 +1,6 @@
 <?php
-session_start(); // Start session
-
+session_start();
 include("config.php");
-
-// Check if the user is logged in before accessing session variables
-if(isset($_SESSION['UserID'])) {
-    // Fetch the user's last name and profile image from the database based on the user's ID stored in the session
-    $userId = $_SESSION['UserID'];
-    $query = "SELECT lastName, img FROM users WHERE UserID = ?";
-    $stmt = $conn->prepare($query);
-    $stmt->bind_param("i", $userId);
-    $stmt->execute();
-    $stmt->bind_result($lastName, $profileImage);
-    $stmt->fetch();
-    $stmt->close();
-} else {
-    // Handle case where user is not logged in or session is not set
-    // You can redirect the user to the login page or handle it based on your application logic
-    // For now, let's set $lastName to an empty string and $profileImage to a default image path
-    $lastName = "Loko na";
-    $profileImage = "default-profile-image.jpg";
-}
 
 // Check if the user is logged in
 if (!isset($_SESSION['UserID'])) {
@@ -174,7 +154,7 @@ $stmt->close();
 
 <body>
 <section class="heading">
-<nav class="navbar">
+    <nav class="navbar">
         <img src="images/loginimg.png" alt="logo" class="logo">
         <div class="title">
             <a href="#"><h5>Jose Rizal Memorial State University</h5></a>
@@ -182,17 +162,17 @@ $stmt->close();
         </div>
         <div class="profile-dropdown">
             <div onclick="toggle()" class="profile-dropdown-btn">
-                <div class="profile-img" style="background-image: url(<?php echo $profileImage; ?>);">
+                <div class="profile-img">
                     <i class="fa-solid fa-circle"></i>
                 </div>
                 <span>
-                    <?php echo $lastName; ?>
+                    Jamis
                     <i class="fa-solid fa-angle-down"></i>
                 </span>
             </div>
             <ul class="profile-dropdown-list">
                 <li class="profile-dropdown-list-item">
-                    <a href="edit_profile.php">
+                    <a href="#">
                         <i class="fa-regular fa-user"></i>
                         Edit Profile
                     </a>
@@ -211,14 +191,12 @@ $stmt->close();
                 </li>
             </ul>
         </div>
-
     </nav>
-    </section>
-    
-    <section class="container">
-        <nav class="side">
+</section>
+<section class="container">
+<nav class="side">
             <div class="sidebar">
-                <div class="side-logo">
+            <div class="side-logo">
                     <img src="<?php echo $profileImage; ?>" alt="Profile Image" class="profile-img-sidebar">
                     <?php
                     // Fetch the user's full name from the database based on UserID stored in the session
@@ -235,24 +213,34 @@ $stmt->close();
                     <h1><?php echo $fullName; ?></h1>
                 </div>
                 <ul>
-                    <li><a href="dashboardfaculty.php">
+                    <li><a href="dashboardassessor.php">
                             <i class="fa-solid fa-gauge"></i>
                             <span class="nav-item">Dashboard</span>
                         </a>
                     </li>
                     <li><a href="fdocuments.php">
                             <i class="fa-solid fa-user-graduate"></i>
-                            <span class="nav-item">Documents</span>
+                            <span class="nav-item">Schedule</span>
                         </a>
                     </li>
                     <li><a href="ftasks.php">
                             <i class="fa-solid fa-file"></i>
-                            <span class="nav-item">Tasks</span>
+                            <span class="nav-item">Tools</span>
                         </a>
                     </li>
-                    <li><a href="fcommunication.php">
+                    <li><a href="scommunication.php">
                             <i class="fa-solid fa-bell"></i>
                             <span class="nav-item">Communication</span>
+                        </a>
+                    </li>
+                    <li><a href="scommunication.php">
+                            <i class="fa-solid fa-bell"></i>
+                            <span class="nav-item">Documents</span>
+                        </a>
+                    </li>
+                    <li><a href="scommunication.php">
+                            <i class="fa-solid fa-bell"></i>
+                            <span class="nav-item">Tasks</span>
                         </a>
                     </li>
                 </ul>

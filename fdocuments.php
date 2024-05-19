@@ -1,5 +1,27 @@
 <?php
-session_start();
+session_start(); // Start session
+
+include("config.php");
+
+// Check if the user is logged in before accessing session variables
+if(isset($_SESSION['UserID'])) {
+    // Fetch the user's last name and profile image from the database based on the user's ID stored in the session
+    $userId = $_SESSION['UserID'];
+    $query = "SELECT lastName, img FROM users WHERE UserID = ?";
+    $stmt = $conn->prepare($query);
+    $stmt->bind_param("i", $userId);
+    $stmt->execute();
+    $stmt->bind_result($lastName, $profileImage);
+    $stmt->fetch();
+    $stmt->close();
+} else {
+    // Handle case where user is not logged in or session is not set
+    // You can redirect the user to the login page or handle it based on your application logic
+    // For now, let's set $lastName to an empty string and $profileImage to a default image path
+    $lastName = "Loko na";
+    $profileImage = "default-profile-image.jpg";
+}
+
 include("config.php");
 
 // Check if the user is logged in before accessing session variables
@@ -225,53 +247,55 @@ if (isset($_POST['submit'])) {
 
 <body>
     <section class="heading">
-        <nav class="navbar">
-            <img src="images/loginimg.png" alt="logo" class="logo">
-            <div class="title">
-                <a href="#"><h5>Jose Rizal Memorial State University</h5></a>
-                <a href="#"><h2>AACCUP Accreditation Monitoring System</h2></a>
-            </div>
-            <div class="profile-dropdown">
-                <div onclick="toggle()" class="profile-dropdown-btn">
-                    <div class="profile-img">
-                        <i class="fa-solid fa-circle"></i>
-                    </div>
-                    <span>
-                        <?php echo $lastName; ?>
-                        <i class="fa-solid fa-angle-down"></i>
-                    </span>
+    <nav class="navbar">
+        <img src="images/loginimg.png" alt="logo" class="logo">
+        <div class="title">
+            <a href="#"><h5>Jose Rizal Memorial State University</h5></a>
+            <a href="#"><h2>AACCUP Accreditation Monitoring System</h2></a>
+        </div>
+        <div class="profile-dropdown">
+            <div onclick="toggle()" class="profile-dropdown-btn">
+                <div class="profile-img" style="background-image: url(<?php echo $profileImage; ?>);">
+                    <i class="fa-solid fa-circle"></i>
                 </div>
-                <ul class="profile-dropdown-list">
-                    <li class="profile-dropdown-list-item">
-                        <a href="#">
-                            <i class="fa-regular fa-user"></i>
-                            Edit Profile
-                        </a>
-                    </li>
-                    <li class="profile-dropdown-list-item">
-                        <a href="#">
-                            <i class="fa-regular fa-sliders"></i>
-                            Settings
-                        </a>
-                    </li>
-                    <li class="profile-dropdown-list-item">
-                        <a href="index.php">
-                            <i class="fa-solid fa-arrow-right-from-bracket"></i>
-                            Log Out
-                        </a>
-                    </li>
-                </ul>
+                <span>
+                    <?php echo $lastName; ?>
+                    <i class="fa-solid fa-angle-down"></i>
+                </span>
             </div>
-        </nav>
-    </section>
+            <ul class="profile-dropdown-list">
+                <li class="profile-dropdown-list-item">
+                    <a href="edit_profile.php">
+                        <i class="fa-regular fa-user"></i>
+                        Edit Profile
+                    </a>
+                </li>
+                <li class="profile-dropdown-list-item">
+                    <a href="#">
+                        <i class="fa-regular fa-sliders"></i>
+                        Settings
+                    </a>
+                </li>
+                <li class="profile-dropdown-list-item">
+                    <a href="index.php">
+                        <i class="fa-solid fa-arrow-right-from-bracket"></i>
+                        Log Out
+                    </a>
+                </li>
+            </ul>
+        </div>
 
+    </nav>
+    </section>
+    
     <section class="container">
         <nav class="side">
             <div class="sidebar">
                 <div class="side-logo">
-                    <img src="images/avatar.jpg">
+                    <img src="<?php echo $profileImage; ?>" alt="Profile Image" class="profile-img-sidebar">
                     <?php
                     // Fetch the user's full name from the database based on UserID stored in the session
+                    $userId = $_SESSION['UserID'];
                     $query = "SELECT firstName, lastName FROM users WHERE UserID = ?";
                     $stmt = $conn->prepare($query);
                     $stmt->bind_param("i", $userId);

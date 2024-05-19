@@ -1,21 +1,44 @@
 <?php
+session_start(); // Start session
+
+include("config.php");
+
+// Check if the user is logged in before accessing session variables
+if(isset($_SESSION['UserID'])) {
+    // Fetch the user's last name and profile image from the database based on the user's ID stored in the session
+    $userId = $_SESSION['UserID'];
+    $query = "SELECT lastName, img FROM users WHERE UserID = ?";
+    $stmt = $conn->prepare($query);
+    $stmt->bind_param("i", $userId);
+    $stmt->execute();
+    $stmt->bind_result($lastName, $profileImage);
+    $stmt->fetch();
+    $stmt->close();
+} else {
+    // Handle case where user is not logged in or session is not set
+    // You can redirect the user to the login page or handle it based on your application logic
+    // For now, let's set $lastName to an empty string and $profileImage to a default image path
+    $lastName = "Loko na";
+    $profileImage = "default-profile-image.jpg";
+}
+
+?>
+<?php
 include('config.php');
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Get form data
-    $fullName = $_POST['full_name'];
+    $firstName = $_POST['first_name'];
+    $lastName = $_POST['last_name'];
     $email = $_POST['email'];
     $role = $_POST['role'];
     $campus = $_POST['campus'];
     $programAffiliated = $_POST['program'];
-    $password = $_POST['password']; // Change $Password to $password
 
-    // Split full name into first name and last name
-    $nameParts = explode(' ', $fullName);
-    $firstName = $nameParts[0];
-    $lastName = isset($nameParts[1]) ? $nameParts[1] : '';
+    // Generate password as the last name in all caps
+    $password = strtoupper($lastName);
 
-    // SQL query to insert new user (with placeholders for prepared statement)
+    // SQL query to insert new user
     $sql = "INSERT INTO users (firstName, lastName, email, Role, Campus, programAffiliated, Password) VALUES (?, ?, ?, ?, ?, ?, ?)";
 
     // Prepare and bind
@@ -173,17 +196,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         </div>
         <div class="profile-dropdown">
             <div onclick="toggle()" class="profile-dropdown-btn">
-                <div class="profile-img">
+                <div class="profile-img" style="background-image: url(<?php echo $profileImage; ?>);">
                     <i class="fa-solid fa-circle"></i>
                 </div>
                 <span>
-                    Jamis
+                    <?php echo $lastName; ?>
                     <i class="fa-solid fa-angle-down"></i>
                 </span>
             </div>
             <ul class="profile-dropdown-list">
                 <li class="profile-dropdown-list-item">
-                    <a href="#">
+                    <a href="edit_profile.php">
                         <i class="fa-regular fa-user"></i>
                         Edit Profile
                     </a>
@@ -202,15 +225,28 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 </li>
             </ul>
         </div>
+
     </nav>
     </section>
     
     <section class="container">
-        <nav class="side">
+    <nav class="side">
             <div class="sidebar">
-                <div class="side-logo">
-                <img src="images/avatar.jpg">
-                <h1>admin</h1>
+            <div class="side-logo">
+                    <img src="<?php echo $profileImage; ?>" alt="Profile Image" class="profile-img-sidebar">
+                    <?php
+                    // Fetch the user's full name from the database based on UserID stored in the session
+                    $userId = $_SESSION['UserID'];
+                    $query = "SELECT firstName, lastName FROM users WHERE UserID = ?";
+                    $stmt = $conn->prepare($query);
+                    $stmt->bind_param("i", $userId);
+                    $stmt->execute();
+                    $stmt->bind_result($firstName, $lastName);
+                    $stmt->fetch();
+                    $fullName = $firstName . " " . $lastName; // Concatenate first name and last name
+                    $stmt->close();
+                    ?>
+                    <h1><?php echo $fullName; ?></h1>
                 </div>
                 <ul>
                     <li><a href="dashboardadmin.php">
@@ -269,46 +305,46 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     <span class="close" onclick="closeAddForm()">×</span>
                     <h2>Add New User</h2>
                     <form action="user.php" method="post">
-                    <label for="full-name">Full Name:</label>
-                    <input type="text" id="full-name" name="full_name" required>
+                    <label for="first-name">First Name:</label>
+                    <input type="text" id="first-name" name="first_name" required>
+                    <label for="last-name">Last Name:</label>
+                    <input type="text" id="last-name" name="last_name" required>
                     <label for="email">Email:</label>
                     <input type="email" id="email" name="email" required>
-                    <label for="password">Password:</label> <!-- Added password field -->
-                    <input type="password" id="password" name="password" required>
-
-                        <label for="role">Role:</label>
-                        <select id="role" name="role" required>
-                            <?php
-                            // Fetch roles from the database and populate the dropdown
-                            $rolesResult = $conn->query("SHOW COLUMNS FROM users WHERE Field = 'Role'");
-                            $row = $rolesResult->fetch_assoc();
-                            $enumList = explode(",", str_replace("'", "", substr($row['Type'], 5, (strlen($row['Type'])-6))));
-                            foreach ($enumList as $value) {
-                                echo "<option value='" . $value . "'>" . $value . "</option>";
-                            }
-                            ?>
-                        </select>
-                        <label for="campus">Campus:</label>
-                        <select id="campus" name="campus" required>
-                            <?php
-                            // Fetch campuses from the database and populate the dropdown
-                            $campusesResult = $conn->query("SELECT UniversityID, Name FROM universities");
-                            while ($row = $campusesResult->fetch_assoc()) {
-                                echo "<option value='" . $row['UniversityID'] . "'>" . $row['Name'] . "</option>";
-                            }
-                            ?>
-                        </select>
-                        <label for="program">Program Affiliation:</label>
-                        <select id="program" name="program" required>
-                            <?php
-                            // Fetch programs from the database and populate the dropdown
-                            $programsResult = $conn->query("SELECT ProgramID, Name FROM programs");
-                            while ($row = $programsResult->fetch_assoc()) {
-                                echo "<option value='" . $row['ProgramID'] . "'>" . $row['Name'] . "</option>";
-                            }
-                            ?>
-                        </select>
-                        <button type="submit">Add User</button>
+                    
+                    <label for="role">Role:</label>
+                    <select id="role" name="role" required>
+                        <?php
+                        // Fetch roles from the database and populate the dropdown
+                        $rolesResult = $conn->query("SHOW COLUMNS FROM users WHERE Field = 'Role'");
+                        $row = $rolesResult->fetch_assoc();
+                        $enumList = explode(",", str_replace("'", "", substr($row['Type'], 5, (strlen($row['Type'])-6))));
+                        foreach ($enumList as $value) {
+                            echo "<option value='" . $value . "'>" . $value . "</option>";
+                        }
+                        ?>
+                    </select>
+                    <label for="campus">Campus:</label>
+                    <select id="campus" name="campus" required>
+                        <?php
+                        // Fetch campuses from the database and populate the dropdown
+                        $campusesResult = $conn->query("SELECT UniversityID, Name FROM universities");
+                        while ($row = $campusesResult->fetch_assoc()) {
+                            echo "<option value='" . $row['UniversityID'] . "'>" . $row['Name'] . "</option>";
+                        }
+                        ?>
+                    </select>
+                    <label for="program">Program Affiliation:</label>
+                    <select id="program" name="program" required>
+                        <?php
+                        // Fetch programs from the database and populate the dropdown
+                        $programsResult = $conn->query("SELECT ProgramID, Name FROM programs");
+                        while ($row = $programsResult->fetch_assoc()) {
+                            echo "<option value='" . $row['ProgramID'] . "'>" . $row['Name'] . "</option>";
+                        }
+                        ?>
+                    </select>
+                    <button type="submit">Add User</button>
                     </form>
                 </div>
             </div>
@@ -327,7 +363,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         <table id="dataTable">
                         <thead>
                             <tr>
-                                <th>User ID</th>
+                                <th>ID</th>
                                 <th>Full Name</th>
                                 <th>Email</th>
                                 <th>Role</th>
@@ -341,7 +377,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                                 include('config.php');
 
                                 // SQL query to retrieve user data with university name instead of campus ID
-                                $sql = "SELECT u.UserID, CONCAT(u.firstName, ' ', u.lastName) AS fullName, u.email, u.Role, univ.Name AS UniversityName 
+                                $sql = "SELECT u.UserID, u.uniqueID, CONCAT(u.firstName, ' ', u.lastName) AS fullName, u.email, u.Role, univ.Name AS UniversityName 
                                         FROM users u 
                                         LEFT JOIN universities univ ON u.Campus = univ.UniversityID";
                                 $result = $conn->query($sql);
@@ -350,12 +386,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                                 if ($result->num_rows > 0) {
                                     while ($row = $result->fetch_assoc()) {
                                         echo "<tr>";
-                                        echo "<td>" . $row["UserID"] . "</td>";
+                                        echo "<td>" . $row["uniqueID"] . "</td>"; // Display uniqueID in the first column
                                         echo "<td>" . $row["fullName"] . "</td>";
                                         echo "<td>" . $row["email"] . "</td>";
                                         echo "<td>" . $row["Role"] . "</td>";
                                         echo "<td>" . $row["UniversityName"] . "</td>"; // Display university name instead of campus ID
-                                        echo "<td><button onclick=\"toggleEditForm('" . $row["UserID"] . "', '" . $row["fullName"] . "', '" . $row["email"] . "', '" . $row["Role"] . "', '" . $row["UniversityName"] . "')\">Edit</button> <button onclick=\"confirmDelete('" . $row["UserID"] . "')\"><i class='fa-solid fa-trash'></i></button></td>";
+                                        echo "<td><button onclick=\"toggleEditForm('" . $row["uniqueID"] . "', '" . $row["fullName"] . "', '" . $row["email"] . "', '" . $row["Role"] . "', '" . $row["UniversityName"] . "')\">Edit</button> <button onclick=\"confirmDelete('" . $row["UserID"] . "')\"><i class='fa-solid fa-trash'></i></button></td>";
                                         echo "</tr>";
                                     }
                                 } else {
@@ -374,11 +410,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     </section>
     <script>
         // Function to prompt user for confirmation before deletion
-        function confirmDelete(code) {
-            var confirmDelete = confirm("Are you sure you want to delete this program?");
+        function confirmDelete(userID) {
+            var confirmDelete = confirm("Are you sure you want to delete this user?");
             if (confirmDelete) {
-                // If user confirms, redirect to delete_program.php with program code
-                window.location.href = "delete_program.php?code=" + code;
+                // If user confirms, redirect to delete_user.php with user ID
+                window.location.href = "delete_user.php?userID=" + userID;
             }
         }
 
