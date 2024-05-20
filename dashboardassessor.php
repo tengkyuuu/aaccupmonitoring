@@ -20,7 +20,6 @@ if(isset($_SESSION['UserID'])) {
     // For now, let's set $lastName to an empty string
     $lastName = "Loko na";
 }
-
 ?>
 
 <!DOCTYPE html>
@@ -233,13 +232,14 @@ if(isset($_SESSION['UserID'])) {
                 </li>
             </ul>
         </div>
+
     </nav>
     </section>
     
     <section class="container">
         <nav class="side">
             <div class="sidebar">
-            <div class="side-logo">
+                <div class="side-logo">
                     <img src="<?php echo $profileImage; ?>" alt="Profile Image" class="profile-img-sidebar">
                     <?php
                     // Fetch the user's full name from the database based on UserID stored in the session
@@ -261,14 +261,14 @@ if(isset($_SESSION['UserID'])) {
                             <span class="nav-item">Dashboard</span>
                         </a>
                     </li>
-                    <li><a href="fdocuments.php">
+                    <li><a href="schedule.php">
                             <i class="fa-solid fa-user-graduate"></i>
                             <span class="nav-item">Schedule</span>
                         </a>
                     </li>
-                    <li><a href="ftasks.php">
+                    <li><a href="accreditation_form.php">
                             <i class="fa-solid fa-file"></i>
-                            <span class="nav-item">Tools</span>
+                            <span class="nav-item">Form</span>
                         </a>
                     </li>
                     <li><a href="scommunication.php">
@@ -276,14 +276,9 @@ if(isset($_SESSION['UserID'])) {
                             <span class="nav-item">Communication</span>
                         </a>
                     </li>
-                    <li><a href="fcommunication.php">
+                    <li><a href="report.php">
                             <i class="fa-solid fa-bell"></i>
-                            <span class="nav-item">Documents</span>
-                        </a>
-                    </li>
-                    <li><a href="fcommunication.php">
-                            <i class="fa-solid fa-bell"></i>
-                            <span class="nav-item">Tasks</span>
+                            <span class="nav-item">Reports</span>
                         </a>
                     </li>
                 </ul>

@@ -258,24 +258,6 @@ if(isset($_SESSION['UserID'])) {
         </nav>
 
         <div class="main">
-            <div id="edit-program-form" class="modal">
-                <div class="modal-content">
-                    <span class="close" onclick="closeEditForm()">×</span>
-                    <h2>Edit Student</h2>
-                    <form id="edit-form" action="edit_student.php" method="post">
-                        <input type="hidden" id="edit-student-id" name="student_id">
-                        <label for="edit-full-name">New Full Name:</label>
-                        <input type="text" id="edit-full-name" name="full_name" required>
-                        <label for="edit-email">New Email:</label>
-                        <input type="email" id="edit-email" name="email" required>
-                        <label for="edit-program">New Program:</label>
-                        <input type="text" id="edit-program" name="program" required>
-                        <label for="edit-year">New Current Year:</label>
-                        <input type="number" id="edit-year" name="current_year" required>
-                        <button type="submit">Save Changes</button>
-                    </form>
-                </div>
-            </div>
             <div class="main">
                 <div class="main-title">
                     <i class="fa-solid fa-gauge"></i>
@@ -293,28 +275,35 @@ if(isset($_SESSION['UserID'])) {
                             <span class="close" onclick="closeAddForm()">×</span>
                             <h2>Add New Campus</h2>
                             <form action="add_campus.php" method="post">
-                                <label for="campus-name">Campus Name:</label>
-                                <input type="text" id="campus-name" name="campus_name" required>
-                                <label for="campus-location">Location:</label>
-                                <input type="text" id="campus-location" name="campus_location" required>
-                                <label for="contact-info">Contact Information:</label>
-                                <input type="text" id="contact-info" name="contact_info" required>
+                                <label for="campus-name">Campus Name:</label><br>
+                                <input type="text" id="campus-name" name="campus_name" required><br>
+                                <label for="campus-location">Location:</label><br>
+                                <input type="text" id="campus-location" name="campus_location" required><br>
+                                <label for="contact-info">Contact Information:</label><br>
+                                <input type="text" id="contact-info" name="contact_info" required><br>
                                 <button type="submit" name="add_campus">Add Campus</button>
                             </form>
-
+                        </div>
+                        
+                    </div>
+                    <div id="edit-campus-form" class="modal">
+                        <div class="modal-content">
+                            <span class="close" onclick="closeEditForm()">×</span>
+                            <h2>Edit Campus</h2>
                             <form id="edit-form" action="edit_campus.php" method="post">
                                 <input type="hidden" id="edit-campus-id" name="campus_id">
                                 <input type="hidden" name="action" value="edit_campus">
-                                <label for="edit-campus-name">New Campus Name:</label>
-                                <input type="text" id="edit-campus-name" name="campus_name" required>
-                                <label for="edit-campus-location">New Location:</label>
-                                <input type="text" id="edit-campus-location" name="campus_location" required>
-                                <label for="edit-contact-info">New Contact Information:</label>
-                                <input type="text" id="edit-contact-info" name="contact_info" required>
+                                <label for="edit-campus-name">New Campus Name:</label><br>
+                                <input type="text" id="edit-campus-name" name="campus_name" required><br>
+                                <label for="edit-campus-location">New Location:</label><br>
+                                <input type="text" id="edit-campus-location" name="campus_location" required><br>
+                                <label for="edit-contact-info">New Contact Information:</label><br>
+                                <input type="text" id="edit-contact-info" name="contact_info" required><br>
                                 <button type="submit">Save Changes</button>
                             </form>
                         </div>
                     </div>
+                    
                         <table id="dataTable">
                         <thead>
                             <tr>

@@ -5,32 +5,43 @@ include("config.php");
 
 // Check if the user is logged in before accessing session variables
 if(isset($_SESSION['UserID'])) {
-    // Fetch the user's last name and profile image from the database based on the user's ID stored in the session
+    // Fetch the user's last name from the database based on the user's ID stored in the session
     $userId = $_SESSION['UserID'];
-    $query = "SELECT lastName, img FROM users WHERE UserID = ?";
+    $query = "SELECT lastName FROM users WHERE UserID = ?";
     $stmt = $conn->prepare($query);
     $stmt->bind_param("i", $userId);
     $stmt->execute();
-    $stmt->bind_result($lastName, $profileImage);
+    $stmt->bind_result($lastName);
     $stmt->fetch();
     $stmt->close();
 } else {
     // Handle case where user is not logged in or session is not set
     // You can redirect the user to the login page or handle it based on your application logic
-    // For now, let's set $lastName to an empty string and $profileImage to a default image path
+    // For now, let's set $lastName to an empty string
     $lastName = "Loko na";
-    $profileImage = "default-profile-image.jpg";
 }
+?>
+
+<?php
+include("config.php");
+
+if ($conn->connect_error) {
+    die("Connection failed: " . $conn->connect_error);
+}
+
+// Fetch programs for the dropdown
+$programsResult = $conn->query("SELECT ProgramID, Name FROM programs");
+
+// Fetch criteria for scoring
+$criteriaResult = $conn->query("SELECT CriterionID, CriterionName FROM accreditation_criteria");
 
 ?>
 
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-<meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Faculty Dashboard</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Visit Form</title>
     <link rel="stylesheet" href="style.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -142,7 +153,7 @@ if(isset($_SESSION['UserID'])) {
         .main-content {
             margin: 5%;
             background-color: whitesmoke;
-            padding: 10px;
+            padding: 20px 100px;
             border-radius: 20px;
             box-shadow: 0 15px 25px rgba(0, 0.1, 0.9);
         }
@@ -173,28 +184,35 @@ if(isset($_SESSION['UserID'])) {
         .main-info h2 {
             font-size: 50px;
         }
-        #one {
-            background-color: #00c0ef;
+        input[type="text"],
+        input[type="number"],
+        select,
+        textarea {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 16px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
         }
-        #two {
-            background-color: #00a65a;
+        textarea {
+            resize: vertical;
         }
-        #three {
-            background-color: #f39c12;
+        input[type="submit"] {
+            background-color: #4CAF50;
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
         }
-        #one i {
-            color: #0083a3;
+        input[type="submit"]:hover {
+            background-color: #45a049;
         }
-        #two i {
-            color: #00733e;
-        }
-        #three i {
-            color: #b06f09;
-        }
-        
     </style>
 </head>
-
+<body>
 <body>
     <section class="heading">
     <nav class="navbar">
@@ -234,14 +252,13 @@ if(isset($_SESSION['UserID'])) {
                 </li>
             </ul>
         </div>
-
     </nav>
     </section>
     
     <section class="container">
         <nav class="side">
             <div class="sidebar">
-                <div class="side-logo">
+            <div class="side-logo">
                     <img src="<?php echo $profileImage; ?>" alt="Profile Image" class="profile-img-sidebar">
                     <?php
                     // Fetch the user's full name from the database based on UserID stored in the session
@@ -258,147 +275,129 @@ if(isset($_SESSION['UserID'])) {
                     <h1><?php echo $fullName; ?></h1>
                 </div>
                 <ul>
-                    <li><a href="dashboardfaculty.php">
+                    <li><a href="dashboardassessor.php">
                             <i class="fa-solid fa-gauge"></i>
                             <span class="nav-item">Dashboard</span>
                         </a>
                     </li>
                     <li><a href="fdocuments.php">
                             <i class="fa-solid fa-user-graduate"></i>
-                            <span class="nav-item">Documents</span>
+                            <span class="nav-item">Schedule</span>
                         </a>
                     </li>
                     <li><a href="ftasks.php">
                             <i class="fa-solid fa-file"></i>
-                            <span class="nav-item">Tasks</span>
+                            <span class="nav-item">Tools</span>
+                        </a>
+                    </li>
+                    <li><a href="scommunication.php">
+                            <i class="fa-solid fa-bell"></i>
+                            <span class="nav-item">Communication</span>
                         </a>
                     </li>
                     <li><a href="fcommunication.php">
                             <i class="fa-solid fa-bell"></i>
-                            <span class="nav-item">Communication</span>
+                            <span class="nav-item">Documents</span>
                         </a>
                     </li>
                 </ul>
             </div>
         </nav>
-
-        
         <div class="main">
             <div class="main-flex">
                 <div class="main-title">
                     <i class="fa-solid fa-gauge"></i>
-                    <h2>Faculty Dashboard</h2>
+                    <h2>Assessor Dashboard</h2>
                 </div>
                 <div class="main-title">
-                    <i id="bell-icon" class="fa-solid fa-bell" style="margin-right: 50px; font-size: x-large"></i>
-                </div>
-            </div>
-            <div id="notification-popup" class="notification-popup">
-                <div class="notification-content">
-                    <!-- Notifications will be dynamically added here -->
+                    <i class="fa-solid fa-bell"  style="margin-right: 50px; font-size:x-large"></i>
                 </div>
             </div>
             <div class="directory">
-                <p><a href="dashboarduser.php">Dashboard</a> > Faculty Dashboard</p>
+                <p><a href="dashboardassessor.php">Dashboard</a> > Assessor Dashboard</p>
             </div>
-            
-            <div class="abouts">
-            <?php
-                include("config.php");
-
-                // Retrieve current accreditation status
-                $query = "SELECT accreditationLevel FROM programs";
-                $result = $conn->query($query);
-                $row = $result->fetch_assoc();
-                $currentAccreditationStatus = $row['accreditationLevel'];
-
-                // Retrieve pending tasks count
-                $query = "SELECT COUNT(*) AS total FROM tasks WHERE Status = 'Pending'";
-                $result = $conn->query($query);
-                $row = $result->fetch_assoc();
-                $pendingTasks = $row['total'];
-
-                // Retrieve completed tasks count
-                $query = "SELECT COUNT(*) AS total FROM tasks WHERE Status = 'Completed'";
-                $result = $conn->query($query);
-                $row = $result->fetch_assoc();
-                $completedTasks = $row['total'];
-            ?>
-            <div class="main-item" id="one">
-                <div class="main-info">
-                    <h5>Current Accreditation Status</h5>
-                    <h2><?php echo $currentAccreditationStatus; ?></h2>
-                </div>
-                <i class="fa-solid fa-user-graduate"></i>
-            </div>
-
-            <div class="main-item" id="two">
-                <div class="main-info">
-                    <h5>Pending Tasks</h5>
-                    <h2><?php echo $pendingTasks; ?></h2>
-                </div>
-                <i class="fa-solid fa-bell"></i>
-            </div>
-
-            <div class="main-item" id="three">
-                <div class="main-info">
-                    <h5>Completed Tasks</h5>
-                    <h2><?php echo $completedTasks; ?></h2>
-                </div>
-                <i class="fa-solid fa-hourglass-half"></i>
-            </div>
-        </div>
             <div class="main-content">
-            
+            <h1>Accreditation Visit Form</h1>
+            <form action="process_accreditation.php" method="post" id="accreditationForm">
+                <label for="program">Program:</label><br>
+                <select name="program" id="program" required>
+                    <?php while ($program = $programsResult->fetch_assoc()) : ?>
+                        <option value="<?= $program['ProgramID'] ?>"><?= $program['Name'] ?></option>
+                    <?php endwhile; ?>
+                </select>
+                <br><br>
+
+                <label for="visit_date">Visit Date:</label><br>
+                <input type="date" id="visit_date" name="visit_date" required>
+                <br><br>
+
+                <label for="visit_type">Visit Type:</label><br>
+                <select name="visit_type" id="visit_type" required>
+                    <option value="Pre-Accreditation Visit">Pre-Accreditation Visit</option>
+                    <option value="Initial Accreditation">Initial Accreditation</option>
+                    <option value="Reaccreditation">Reaccreditation</option>
+                    <option value="Interim Visit">Interim Visit</option>
+                    <option value="Special Visit">Special Visit</option>
+                </select>
+                <br><br>
+
+                <label for="assessment_team">Assessment Team:</label><br>
+                <input type="text" id="assessment_team" name="assessment_team" required>
+                <br><br>
+
+                <label for="visit_outcome">Visit Outcome:</label><br>
+                <input type="text" id="visit_outcome" name="visit_outcome" required>
+                <br><br>
+
+                <h2>Scores and Comments</h2>
+                <?php while ($criterion = $criteriaResult->fetch_assoc()) : ?>
+                    <label for="criterion_<?= $criterion['CriterionID'] ?>"><?= $criterion['CriterionName'] ?>:</label><br>
+                    <input type="number" id="criterion_<?= $criterion['CriterionID'] ?>" name="scores[<?= $criterion['CriterionID'] ?>]" min="1" max="5" required onchange="updateComment(<?= $criterion['CriterionID'] ?>)">
+                    <input type="text" id="comment_<?= $criterion['CriterionID'] ?>" name="comments[<?= $criterion['CriterionID'] ?>]" readonly> <!-- Hidden input for comments -->
+                    <br><br>
+                <?php endwhile; ?>
+
+                <label for="overall_comments">Recommendations:</label><br>
+                <textarea id="overall_comments" name="overall_comments" rows="4" cols="50"></textarea>
+                <br><br>
+
+                <input type="submit" value="Submit">
+            </form>
+
+            <script>
+                function updateComment(criterionID) {
+                    var scoreInput = document.getElementById("criterion_" + criterionID);
+                    var commentInput = document.getElementById("comment_" + criterionID);
+                    var score = parseInt(scoreInput.value);
+                    var comment = '';
+                    switch (score) {
+                        case 1:
+                            comment = 'Poor';
+                            break;
+                        case 2:
+                            comment = 'Below Average';
+                            break;
+                        case 3:
+                            comment = 'Average';
+                            break;
+                        case 4:
+                            comment = 'Good';
+                            break;
+                        case 5:
+                            comment = 'Excellent';
+                            break;
+                        default:
+                            comment = 'Invalid Score';
+                    }
+                    commentInput.value = comment;
+                }
+            </script>
             </div>
         </div>
     
-</body>
-<script>
-    // Function to handle bell icon click event
-document.getElementById('bell-icon').addEventListener('click', function() {
-    // Display the notification popup
-    document.getElementById('notification-popup').style.display = 'block';
-    
-    // AJAX request to fetch and display notifications
-    fetchNotifications();
-});
-
-// AJAX request to periodically check for new notifications
-setInterval(function() {
-    checkForNewNotifications();
-}, 5000); // Check every 5 seconds
-
-// Function to check for new notifications
-function checkForNewNotifications() {
-    $.ajax({
-        url: 'check_for_new_notifications.php',
-        type: 'GET',
-        success: function(response) {
-            if (response === 'true') {
-                // If there are new notifications, change the bell icon color to red
-                document.getElementById('bell-icon').style.color = 'red';
-            } else {
-                // If there are no new notifications, reset the bell icon color
-                document.getElementById('bell-icon').style.color = ''; // Reset to default color
-            }
-        }
-    });
-}
-
-// Function to fetch and display notifications
-function fetchNotifications() {
-    $.ajax({
-        url: 'fetch_notifications.php',
-        type: 'GET',
-        success: function(response) {
-            // Display notifications in the notification popup
-            document.querySelector('.notification-content').innerHTML = response;
-        }
-    });
-}
-</script>
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-
-<script src="script.js"></script>
 </html>
+<script src="script.js"></script>
+
+<?php
+$conn->close();
+?>

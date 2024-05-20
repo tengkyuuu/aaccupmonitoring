@@ -257,24 +257,6 @@ if(isset($_SESSION['UserID'])) {
         </nav>
 
         <div class="main">
-            <div id="edit-program-form" class="modal">
-                <div class="modal-content">
-                    <span class="close" onclick="closeEditForm()">×</span>
-                    <h2>Edit Student</h2>
-                    <form id="edit-form" action="edit_student.php" method="post">
-                        <input type="hidden" id="edit-student-id" name="student_id">
-                        <label for="edit-full-name">New Full Name:</label>
-                        <input type="text" id="edit-full-name" name="full_name" required>
-                        <label for="edit-email">New Email:</label>
-                        <input type="email" id="edit-email" name="email" required>
-                        <label for="edit-program">New Program:</label>
-                        <input type="text" id="edit-program" name="program" required>
-                        <label for="edit-year">New Current Year:</label>
-                        <input type="number" id="edit-year" name="current_year" required>
-                        <button type="submit">Save Changes</button>
-                    </form>
-                </div>
-            </div>
             <div class="main">
                 <div class="main-title">
                     <i class="fa-solid fa-gauge"></i>
@@ -289,11 +271,11 @@ if(isset($_SESSION['UserID'])) {
                         <table id="dataTable">
                         <thead>
                             <tr>
-                                <th>Program Name</th>
+                                <th>Program</th>
                                 <th>Department</th>
-                                <th>Level</th>
                                 <th>Accreditation Status</th> <!-- Add the Actions table header -->
                                 <th>Accreditation Level</th>
+                                <th>Results</th>
                                 <th>Actions</th>
                             </tr>
                         </thead>
@@ -303,7 +285,7 @@ if(isset($_SESSION['UserID'])) {
                                 include('config.php');
 
                                 // SQL query to retrieve program data with department names
-                                $sql = "SELECT programs.ProgramID, programs.Name AS ProgramName, departments.Name AS DepartmentName, programs.Level, programs.AccreditationStatus, programs.AccreditationLevel
+                                $sql = "SELECT programs.ProgramID, programs.code AS ProgramName, departments.Name AS DepartmentName, programs.Level, programs.AccreditationStatus, programs.AccreditationLevel
                                         FROM programs
                                         INNER JOIN departments ON programs.DepartmentID = departments.DepartmentID";
                                 // Execute the query
@@ -315,7 +297,6 @@ if(isset($_SESSION['UserID'])) {
                                         echo "<tr>";
                                         echo "<td>" . $row["ProgramName"] . "</td>"; // Display program name
                                         echo "<td>" . $row["DepartmentName"] . "</td>"; // Display department name
-                                        echo "<td>" . $row["Level"] . "</td>"; // Display level
                                         echo "<td>" . $row["AccreditationStatus"] . "</td>"; // Display accreditation status
                                         echo "<td>" . $row["AccreditationLevel"] . "</td>"; // Display accreditation level
                                         // Add Edit and Delete buttons
