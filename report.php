@@ -22,75 +22,10 @@ if(isset($_SESSION['UserID'])) {
     $profileImage = "default-profile-image.jpg";
 }
 
-include("config.php");
+// Fetch accreditation results from the database
+$query = "SELECT DISTINCT accreditation_reports.*, programs.Name FROM accreditation_reports, accreditationvisits INNER JOIN programs ON accreditationvisits.ProgramID = programs.ProgramID";
+$result = $conn->query($query);
 
-// Check if the user is logged in before accessing session variables
-if (!isset($_SESSION['UserID'])) {
-    // Redirect the user to the login page if not logged in
-    header("Location: index.php");
-    exit();
-}
-
-// Fetch the user's last name from the database based on the user's ID stored in the session
-$userId = $_SESSION['UserID'];
-$query = "SELECT lastName FROM users WHERE UserID = ?";
-$stmt = $conn->prepare($query);
-$stmt->bind_param("i", $userId);
-$stmt->execute();
-$stmt->bind_result($lastName);
-$stmt->fetch();
-$stmt->close();
-
-// Check if the form is submitted
-if (isset($_POST['submit'])) {
-    $documentName = $_POST['document_name'];
-    $uploadedBy = $_SESSION['UserID']; // Get the current user's ID
-
-    // File upload handling
-    $targetDirectory = "uploads/"; // Directory where files will be uploaded
-    $targetFile = $targetDirectory . basename($_FILES["document"]["name"]);
-    $uploadOk = 1;
-    $fileType = strtolower(pathinfo($targetFile, PATHINFO_EXTENSION));
-
-    // Check if file already exists
-    if (file_exists($targetFile)) {
-        echo "Sorry, file already exists.";
-        $uploadOk = 0;
-    }
-
-    // Check file size (optional)
-    if ($_FILES["document"]["size"] > 5000000) {
-        echo "Sorry, your file is too large.";
-        $uploadOk = 0;
-    }
-
-    // Allow only specific file formats (you can modify as needed)
-    if ($fileType != "pdf" && $fileType != "doc" && $fileType != "docx") {
-        echo "Sorry, only PDF, DOC, and DOCX files are allowed.";
-        $uploadOk = 0;
-    }
-
-    // Check if $uploadOk is set to 0 by an error
-    if ($uploadOk == 0) {
-        echo "Sorry, your file was not uploaded.";
-    } else {
-        // If everything is OK, try to upload file
-        if (move_uploaded_file($_FILES["document"]["tmp_name"], $targetFile)) {
-            // Insert document details into the database
-            $query = "INSERT INTO documents (DocumentName, UploadedBy, UploadDate, FileURL) VALUES (?, ?, NOW(), ?)";
-            $stmt = $conn->prepare($query);
-            $stmt->bind_param("sis", $documentName, $uploadedBy, $targetFile); // Bind the current user's ID
-            if ($stmt->execute()) {
-                echo "The file " . htmlspecialchars(basename($_FILES["document"]["name"])) . " has been uploaded.";
-            } else {
-                echo "Error: " . $stmt->error;
-            }
-            $stmt->close();
-        } else {
-            echo "Sorry, there was an error uploading your file.";
-        }
-    }
-}
 ?>
 
 <!DOCTYPE html>
@@ -99,7 +34,7 @@ if (isset($_POST['submit'])) {
 <head>
 <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Dashboard</title>
+    <title>Accreditation Results</title>
     <link rel="stylesheet" href="style.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -140,33 +75,6 @@ if (isset($_POST['submit'])) {
         }
         .directory a:hover {
             color: orangered;
-        }
-        table {
-            border-collapse: collapse;
-            margin: 25px 0;
-            font-size: 15px;
-            min-width: 100%;
-            overflow: hidden;
-            border-radius: 5px 5px 0 0;
-        }  
-        table thead tr {
-            color: #fff;
-            background: brown;
-            text-align: left;
-            font-weight: bold;
-        }
-        th, td {
-            padding: 12px 15px;
-            text-align: left;
-        }
-        tbody tr{
-            border-bottom: 1px solid #ddd;
-        }
-        tbody tr:nth-of-type(odd){
-            background: #f3f3f3;
-        }
-        tbody tr:last-of-type{
-            border-bottom: 2px solid brown;
         }
         .button-bar {
             display: flex;
@@ -209,9 +117,9 @@ if (isset($_POST['submit'])) {
             cursor: pointer;
         }
         .main-content {
-            margin: 10%;
+            margin: 5%;
             background-color: whitesmoke;
-            padding: 50px;
+            padding: 10px;
             border-radius: 20px;
             box-shadow: 0 15px 25px rgba(0, 0.1, 0.9);
         }
@@ -242,96 +150,7 @@ if (isset($_POST['submit'])) {
         .main-info h2 {
             font-size: 50px;
         }
-        .form-popup {
-            background: whitesmoke;
-            border: 2px solid #fff;
-            border-radius: 20px;
-            box-shadow: 0 20px 35px rgba(0, 0.1, 0.9);
-            margin: 5%;
-            padding: 20px;
-        }
-
-        .form-box {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-
-        .form-box h2 {
-            text-align: center;
-            margin-bottom: 30px;
-        }
-
-        .form-content {
-            width: 100%;
-            max-width: 500px;
-            padding: 35px;
-            background: whitesmoke;
-            border-radius: 10px;
-            box-shadow: 0 20px 35px rgba(0, 0.1, 0.9);
-        }
-
-        form .input-field {
-            height: 50px;
-            width: 100%;
-            margin-top: 20px;
-            position: relative;
-        }
-
-        form .input-field input, form .input-field label {
-            width: 100%;
-            height: 100%;
-            padding: 0 15px;
-            font-size: 0.95rem;
-            border-radius: 3px;
-            border: 1px solid #18191A;
-        }
-
-        form .input-field label {
-            position: absolute;
-            top: 50%;
-            left: 15px;
-            color: #18191A;
-            pointer-events: none;
-            transform: translateY(-50%);
-            transition: 0.2s ease;
-        }
-
-        .input-field input:focus {
-            border-color: lightblue;
-        }
-
-        .input-field input:is(:focus, :valid) {
-            padding: 16px 15px 0;
-        }
-
-        .input-field input:is(:focus, :valid) ~label {
-            color: blue;
-            font-size: 0.75rem;
-            transform: translateY(-120%);
-        }
-        input {
-            width: 100%;
-            padding: 14px 0;
-        }
-        form button {
-            width: 100%;
-            color: #fff;
-            border: none;
-            outline: none;
-            padding: 14px 0;
-            font-size: 1rem;
-            font-weight: 500;
-            border-radius: 3px;
-            cursor: pointer;
-            margin: 25px 0;
-            background: black;
-            transition: 0.2s ease;
-        }
-
-        form button:hover {
-            background: blue;
-        }
+        
     </style>
 </head>
 
@@ -398,57 +217,92 @@ if (isset($_POST['submit'])) {
                     <h1><?php echo $fullName; ?></h1>
                 </div>
                 <ul>
-                    <li><a href="dashboardfaculty.php">
+                    <li><a href="dashboardassessor.php">
                             <i class="fa-solid fa-gauge"></i>
                             <span class="nav-item">Dashboard</span>
                         </a>
                     </li>
-                    <li><a href="fdocuments.php">
-                            <i class="fa-solid fa-file"></i>
-                            <span class="nav-item">Documents</span>
+                    <li><a href="schedule.php">
+                            <i class="fa-solid fa-calendar-days"></i>
+                            <span class="nav-item">Schedule</span>
                         </a>
                     </li>
-                    <li><a href="ftasks.php">
-                            <i class="fa-solid fa-list-check"></i>
-                            <span class="nav-item">Tasks</span>
+                    <li><a href="accreditation_form.php">
+                            <i class="fa-brands fa-wpforms"></i>
+                            <span class="nav-item">Form</span>
                         </a>
                     </li>
-                    <li><a href="fcommunication.php">
+                    <li><a href="scommunication.php">
                             <i class="fa-solid fa-comments"></i>
                             <span class="nav-item">Communication</span>
+                        </a>
+                    </li>
+                    <li><a href="report.php">
+                            <i class="fa-solid fa-flag"></i>
+                            <span class="nav-item">Reports</span>
                         </a>
                     </li>
                 </ul>
             </div>
         </nav>
 
+        
         <div class="main">
             <div class="main-flex">
                 <div class="main-title">
                     <i class="fa-solid fa-gauge"></i>
-                    <h2>Faculty Dashboard</h2>
+                    <h2>Accreditation Reports</h2>
                 </div>
                 <div class="main-title">
-                    <i class="fa-solid fa-bell" style="margin-right: 50px; font-size:x-large"></i>
+                    <i class="fa-solid fa-bell"  style="margin-right: 50px; font-size:x-large"></i>
                 </div>
             </div>
             <div class="directory">
-                <p><a href="dashboarduser.php">Dashboard</a> > Faculty Dashboard</p>
+                <p><a href="dashboardassessor.php">Dashboard</a> > Accreditation Reports</p>
             </div>
-
             <div class="main-content">
-                <h2>Upload Document</h2>
-                <form action="fdocuments.php" method="post" enctype="multipart/form-data">
-                    <label for="document">Select Document:</label><br>
-                    <input type="file" name="document" id="document" required><br><br>
-                    <label for="document_name">Document Name:</label><br>
-                    <input type="text" name="document_name" id="document_name" required><br><br>
-                    <button type="submit" name="submit">Upload</button>
-                </form>
+            <<h3>Accreditation Results</h3>
+                <?php if($result && $result->num_rows > 0): ?>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Visit ID</th>
+                            <th>Date Generated</th>
+                            <th>Program Name</th>
+                            <th>File URL</th>
+                            <th>Download</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php while ($row = $result->fetch_assoc()): ?>
+                        <tr>
+                            <td><?php echo $row['VisitID']; ?></td>
+                            <td><?php echo $row['GeneratedDate']; ?></td>
+                            <td><?php echo $row['Name']; ?></td>
+                            <td><?php echo $row['FileURL']; ?></td>
+                            <td>
+                                <?php
+                                // Assuming the 'FileURL' column contains the file path
+                                $fileURL = $row['FileURL'];
+                                ?>
+                                <!-- Download button/link -->
+                                <a href="<?php echo $fileURL; ?>" download>
+                                    Download
+                                </a>
+                            </td>
+                        </tr>
+                        <?php endwhile; ?>
+                    </tbody>
+                </table>
+                <?php else: ?>
+                <p>No accreditation reports available.</p>
+                <?php endif; ?>
             </div>
         </div>
-    </section>
+    
 </body>
+    
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 
 <script src="script.js"></script>
 </html>

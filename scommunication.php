@@ -1,6 +1,26 @@
 <?php
-session_start();
+session_start(); // Start session
+
 include("config.php");
+
+// Check if the user is logged in before accessing session variables
+if(isset($_SESSION['UserID'])) {
+    // Fetch the user's last name and profile image from the database based on the user's ID stored in the session
+    $userId = $_SESSION['UserID'];
+    $query = "SELECT lastName, img FROM users WHERE UserID = ?";
+    $stmt = $conn->prepare($query);
+    $stmt->bind_param("i", $userId);
+    $stmt->execute();
+    $stmt->bind_result($lastName, $profileImage);
+    $stmt->fetch();
+    $stmt->close();
+} else {
+    // Handle case where user is not logged in or session is not set
+    // You can redirect the user to the login page or handle it based on your application logic
+    // For now, let's set $lastName to an empty string and $profileImage to a default image path
+    $lastName = "Loko na";
+    $profileImage = "default-profile-image.jpg";
+}
 
 // Check if the user is logged in
 if (!isset($_SESSION['UserID'])) {
@@ -115,14 +135,19 @@ $stmt->close();
         }
         .message.sent {
             text-align: right;
+            padding: 10px;
         }
         .message.received {
             text-align: left;
+            background-color: #1269f3;
+            width: fit-content;
+            padding: 10px;
+            border-radius: 20px;
         }
         .message .timestamp {
             display: block;
             font-size: 0.8em;
-            color: #888;
+            color: white;
         }
         form {
             display: flex;
@@ -162,17 +187,17 @@ $stmt->close();
         </div>
         <div class="profile-dropdown">
             <div onclick="toggle()" class="profile-dropdown-btn">
-                <div class="profile-img">
+                <div class="profile-img" style="background-image: url(<?php echo $profileImage; ?>);">
                     <i class="fa-solid fa-circle"></i>
                 </div>
                 <span>
-                    Jamis
+                    <?php echo $lastName; ?>
                     <i class="fa-solid fa-angle-down"></i>
                 </span>
             </div>
             <ul class="profile-dropdown-list">
                 <li class="profile-dropdown-list-item">
-                    <a href="#">
+                    <a href="edit_profile.php">
                         <i class="fa-regular fa-user"></i>
                         Edit Profile
                     </a>
@@ -218,29 +243,24 @@ $stmt->close();
                             <span class="nav-item">Dashboard</span>
                         </a>
                     </li>
-                    <li><a href="fdocuments.php">
-                            <i class="fa-solid fa-user-graduate"></i>
+                    <li><a href="schedule.php">
+                            <i class="fa-solid fa-calendar-days"></i>
                             <span class="nav-item">Schedule</span>
                         </a>
                     </li>
-                    <li><a href="ftasks.php">
-                            <i class="fa-solid fa-file"></i>
-                            <span class="nav-item">Tools</span>
+                    <li><a href="accreditation_form.php">
+                            <i class="fa-brands fa-wpforms"></i>
+                            <span class="nav-item">Form</span>
                         </a>
                     </li>
                     <li><a href="scommunication.php">
-                            <i class="fa-solid fa-bell"></i>
+                            <i class="fa-solid fa-comments"></i>
                             <span class="nav-item">Communication</span>
                         </a>
                     </li>
-                    <li><a href="scommunication.php">
-                            <i class="fa-solid fa-bell"></i>
-                            <span class="nav-item">Documents</span>
-                        </a>
-                    </li>
-                    <li><a href="scommunication.php">
-                            <i class="fa-solid fa-bell"></i>
-                            <span class="nav-item">Tasks</span>
+                    <li><a href="report.php">
+                            <i class="fa-solid fa-flag"></i>
+                            <span class="nav-item">Reports</span>
                         </a>
                     </li>
                 </ul>

@@ -1,6 +1,6 @@
 :root {
     --primary: antiquewhite;
-    --secondary: orangered;
+    --secondary: rgb(24, 23, 11);
     --green: #82cd47;
     --secondary-light: rgba(34, 124, 112, 0.2);
     --secondary-light-2: rgba(127, 183, 126, 0.1);
@@ -18,13 +18,13 @@
 body {
     height: 100vh;
     width: 100%;
-    background: antiquewhite;
+    background: gray;
 }
 .navbar {
     display: flex;
     align-items: center;
     height: 110px;
-    background: linear-gradient(270deg, rgb(48, 48, 48), orangered);
+    background: linear-gradient(90deg, #D3D3D3, #4682B4, #2F4F4F);
     padding: 0 8%;
     justify-content:space-around ;
     padding: 20px;
@@ -114,7 +114,7 @@ body {
 }
 
 .profile-dropdown-list hr {
-    border: 0.5px solid var(--green);
+    border: 0.5px solid var(--black);
 }
 
 .profile-dropdown-list.active {
@@ -175,7 +175,7 @@ body {
     height: 140vh;
     left: 0;
     width: 75px;
-    background: #393e46;
+    background: linear-gradient(0deg, #4682B4 0%, #14101c 100%);
     overflow: hidden;
     transition: 1s;
 }
@@ -248,4 +248,32 @@ body {
 }
 .main {
     background-color: grey;
+}
+
+table {
+    border-collapse: collapse;
+    margin: 25px 0;
+    font-size: 15px;
+    min-width: 100%;
+    overflow: hidden;
+    border-radius: 5px 5px 0 0;
+}  
+table thead tr {
+    color: #fff;
+    background: linear-gradient(90deg, #000, #4682B4, #2F4F4F);
+    text-align: left;
+    font-weight: bold;
+}
+th, td {
+    padding: 12px 15px;
+    text-align: left;
+}
+tbody tr{
+    border-bottom: 1px solid #ddd;
+}
+tbody tr:nth-of-type(odd){
+    background: #f3f3f3;
+}
+tbody tr:last-of-type{
+    border-bottom: 2px solid brown;
 }

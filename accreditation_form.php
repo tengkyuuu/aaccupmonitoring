@@ -5,20 +5,21 @@ include("config.php");
 
 // Check if the user is logged in before accessing session variables
 if(isset($_SESSION['UserID'])) {
-    // Fetch the user's last name from the database based on the user's ID stored in the session
+    // Fetch the user's last name and profile image from the database based on the user's ID stored in the session
     $userId = $_SESSION['UserID'];
-    $query = "SELECT lastName FROM users WHERE UserID = ?";
+    $query = "SELECT lastName, img FROM users WHERE UserID = ?";
     $stmt = $conn->prepare($query);
     $stmt->bind_param("i", $userId);
     $stmt->execute();
-    $stmt->bind_result($lastName);
+    $stmt->bind_result($lastName, $profileImage);
     $stmt->fetch();
     $stmt->close();
 } else {
     // Handle case where user is not logged in or session is not set
     // You can redirect the user to the login page or handle it based on your application logic
-    // For now, let's set $lastName to an empty string
+    // For now, let's set $lastName to an empty string and $profileImage to a default image path
     $lastName = "Loko na";
+    $profileImage = "default-profile-image.jpg";
 }
 ?>
 
@@ -252,13 +253,14 @@ $criteriaResult = $conn->query("SELECT CriterionID, CriterionName FROM accredita
                 </li>
             </ul>
         </div>
+
     </nav>
     </section>
     
     <section class="container">
         <nav class="side">
             <div class="sidebar">
-            <div class="side-logo">
+                <div class="side-logo">
                     <img src="<?php echo $profileImage; ?>" alt="Profile Image" class="profile-img-sidebar">
                     <?php
                     // Fetch the user's full name from the database based on UserID stored in the session
@@ -280,24 +282,24 @@ $criteriaResult = $conn->query("SELECT CriterionID, CriterionName FROM accredita
                             <span class="nav-item">Dashboard</span>
                         </a>
                     </li>
-                    <li><a href="fdocuments.php">
-                            <i class="fa-solid fa-user-graduate"></i>
+                    <li><a href="schedule.php">
+                            <i class="fa-solid fa-calendar-days"></i>
                             <span class="nav-item">Schedule</span>
                         </a>
                     </li>
-                    <li><a href="ftasks.php">
-                            <i class="fa-solid fa-file"></i>
-                            <span class="nav-item">Tools</span>
+                    <li><a href="accreditation_form.php">
+                            <i class="fa-brands fa-wpforms"></i>
+                            <span class="nav-item">Form</span>
                         </a>
                     </li>
                     <li><a href="scommunication.php">
-                            <i class="fa-solid fa-bell"></i>
+                            <i class="fa-solid fa-comments"></i>
                             <span class="nav-item">Communication</span>
                         </a>
                     </li>
-                    <li><a href="fcommunication.php">
-                            <i class="fa-solid fa-bell"></i>
-                            <span class="nav-item">Documents</span>
+                    <li><a href="report.php">
+                            <i class="fa-solid fa-flag"></i>
+                            <span class="nav-item">Reports</span>
                         </a>
                     </li>
                 </ul>
@@ -307,14 +309,14 @@ $criteriaResult = $conn->query("SELECT CriterionID, CriterionName FROM accredita
             <div class="main-flex">
                 <div class="main-title">
                     <i class="fa-solid fa-gauge"></i>
-                    <h2>Assessor Dashboard</h2>
+                    <h2>Assessor Form</h2>
                 </div>
                 <div class="main-title">
                     <i class="fa-solid fa-bell"  style="margin-right: 50px; font-size:x-large"></i>
                 </div>
             </div>
             <div class="directory">
-                <p><a href="dashboardassessor.php">Dashboard</a> > Assessor Dashboard</p>
+                <p><a href="dashboardassessor.php">Dashboard</a> > Assessor Form</p>
             </div>
             <div class="main-content">
             <h1>Accreditation Visit Form</h1>

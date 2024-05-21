@@ -21,7 +21,6 @@ if(isset($_SESSION['UserID'])) {
     $lastName = "Loko na";
     $profileImage = "default-profile-image.jpg";
 }
-
 ?>
 
 <!DOCTYPE html>
@@ -205,7 +204,7 @@ if(isset($_SESSION['UserID'])) {
         </div>
         <div class="profile-dropdown">
             <div onclick="toggle()" class="profile-dropdown-btn">
-                <div class="profile-img" style="background-image: url(<?php echo $profileImage; ?>);">
+            <div class="profile-img" style="background-image: url(<?php echo $profileImage; ?>);">
                     <i class="fa-solid fa-circle"></i>
                 </div>
                 <span>
@@ -264,17 +263,17 @@ if(isset($_SESSION['UserID'])) {
                         </a>
                     </li>
                     <li><a href="fdocuments.php">
-                            <i class="fa-solid fa-user-graduate"></i>
+                            <i class="fa-solid fa-file"></i>
                             <span class="nav-item">Documents</span>
                         </a>
                     </li>
                     <li><a href="ftasks.php">
-                            <i class="fa-solid fa-file"></i>
+                            <i class="fa-solid fa-list-check"></i>
                             <span class="nav-item">Tasks</span>
                         </a>
                     </li>
                     <li><a href="fcommunication.php">
-                            <i class="fa-solid fa-bell"></i>
+                            <i class="fa-solid fa-comments"></i>
                             <span class="nav-item">Communication</span>
                         </a>
                     </li>

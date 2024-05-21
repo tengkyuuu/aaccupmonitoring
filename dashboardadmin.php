@@ -153,6 +153,7 @@ if(isset($_SESSION['UserID'])) {
             display: flex;
             justify-content: space-between;
             margin: 5%;
+            
         }  
         .main-item {
             margin-left: 10px;
@@ -164,6 +165,8 @@ if(isset($_SESSION['UserID'])) {
             display: flex;
             justify-content: space-between;
             align-items: center;
+            border-radius: 20px;
+            box-shadow: 0 15px 25px rgba(0, 0.1, 0.9);
         }
         .main-item:last-child {
             margin-right: 10px;
@@ -177,13 +180,13 @@ if(isset($_SESSION['UserID'])) {
             font-size: 50px;
         }
         #one {
-            background-color: #00c0ef;
+            background-color: #005976;
         }
         #two {
-            background-color: #00a65a;
+            background-color: #00582f;
         }
         #three {
-            background-color: #f39c12;
+            background-color: #e6910c;
         }
         #one i {
             color: #0083a3;
@@ -267,42 +270,42 @@ if(isset($_SESSION['UserID'])) {
                     </a>
                     </li>
                     <li><a href="user.php">
-                        <i class="fa-solid fa-gear"></i>
+                        <i class="fa-solid fa-user"></i>
                         <span class="nav-item">Users</span>
                     </a>
                     </li>
                     <li><a href="campus.php">
-                        <i class="fa-solid fa-user-graduate"></i>
+                        <i class="fa-solid fa-school"></i>
                         <span class="nav-item">Campuses</span>
                     </a>
                     </li>
                     <li><a href="departments.php">
-                        <i class="fa-solid fa-file"></i>
+                        <i class="fa-solid fa-building-user"></i>
                         <span class="nav-item">Departments  </span>
                     </a>
                     </li>
                     <li><a href="program.php">
-                        <i class="fa-solid fa-bell"></i>
+                        <i class="fa-solid fa-gear"></i>
                         <span class="nav-item">Programs</span>
                     </a>
                     </li>
                     <li><a href="visits.php">
-                        <i class="fa-solid fa-user"></i>
+                        <i class="fa-solid fa-location-dot"></i>
                         <span class="nav-item">Visits</span>
                     </a>
                     </li>
                     <li><a href="documents.php">
-                        <i class="fa-solid fa-user"></i>
+                        <i class="fa-solid fa-file"></i>
                         <span class="nav-item">Documents</span>
                     </a>
                     </li>
                     <li><a href="tasks.php">
-                        <i class="fa-solid fa-user"></i>
+                        <i class="fa-solid fa-list-check"></i>
                         <span class="nav-item">Tasks</span>
                     </a>
                     </li>
                     <li><a href="acommunication.php">
-                        <i class="fa-solid fa-user"></i>
+                        <i class="fa-solid fa-comments"></i>
                         <span class="nav-item">Communication</span>
                     </a>
                     </li>
@@ -315,14 +318,14 @@ if(isset($_SESSION['UserID'])) {
             <div class="main-flex">
                 <div class="main-title">
                     <i class="fa-solid fa-gauge"></i>
-                    <h2>Faculty Dashboard</h2>
+                    <h2>Admin Dashboard</h2>
                 </div>
                 <div class="main-title">
                     <i class="fa-solid fa-bell"  style="margin-right: 50px; font-size:x-large"></i>
                 </div>
             </div>
             <div class="directory">
-                <p><a href="dashboarduser.php">Dashboard</a> > Faculty Dashboard</p>
+                <p><a href="dashboarduser.php">Dashboard</a> > Admin Dashboard</p>
             </div>
             
             <div class="abouts">

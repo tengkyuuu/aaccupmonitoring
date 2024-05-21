@@ -135,14 +135,19 @@ $stmt->close();
         }
         .message.sent {
             text-align: right;
+            padding: 10px;
         }
         .message.received {
             text-align: left;
+            background-color: #1269f3;
+            width: fit-content;
+            padding: 10px;
+            border-radius: 20px;
         }
         .message .timestamp {
             display: block;
             font-size: 0.8em;
-            color: #888;
+            color: white;
         }
         form {
             display: flex;
@@ -241,17 +246,17 @@ $stmt->close();
                         </a>
                     </li>
                     <li><a href="fdocuments.php">
-                            <i class="fa-solid fa-user-graduate"></i>
+                            <i class="fa-solid fa-file"></i>
                             <span class="nav-item">Documents</span>
                         </a>
                     </li>
                     <li><a href="ftasks.php">
-                            <i class="fa-solid fa-file"></i>
+                            <i class="fa-solid fa-list-check"></i>
                             <span class="nav-item">Tasks</span>
                         </a>
                     </li>
                     <li><a href="fcommunication.php">
-                            <i class="fa-solid fa-bell"></i>
+                            <i class="fa-solid fa-comments"></i>
                             <span class="nav-item">Communication</span>
                         </a>
                     </li>

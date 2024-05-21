@@ -5,21 +5,23 @@ include("config.php");
 
 // Check if the user is logged in before accessing session variables
 if(isset($_SESSION['UserID'])) {
-    // Fetch the user's last name from the database based on the user's ID stored in the session
+    // Fetch the user's last name and profile image from the database based on the user's ID stored in the session
     $userId = $_SESSION['UserID'];
-    $query = "SELECT lastName FROM users WHERE UserID = ?";
+    $query = "SELECT lastName, img FROM users WHERE UserID = ?";
     $stmt = $conn->prepare($query);
     $stmt->bind_param("i", $userId);
     $stmt->execute();
-    $stmt->bind_result($lastName);
+    $stmt->bind_result($lastName, $profileImage);
     $stmt->fetch();
     $stmt->close();
 } else {
     // Handle case where user is not logged in or session is not set
     // You can redirect the user to the login page or handle it based on your application logic
-    // For now, let's set $lastName to an empty string
+    // For now, let's set $lastName to an empty string and $profileImage to a default image path
     $lastName = "Loko na";
+    $profileImage = "default-profile-image.jpg";
 }
+
 ?>
 
 <!DOCTYPE html>
@@ -28,7 +30,7 @@ if(isset($_SESSION['UserID'])) {
 <head>
 <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Assessor Dashboard</title>
+    <title>Faculty Dashboard</title>
     <link rel="stylesheet" href="style.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -262,22 +264,22 @@ if(isset($_SESSION['UserID'])) {
                         </a>
                     </li>
                     <li><a href="schedule.php">
-                            <i class="fa-solid fa-user-graduate"></i>
+                            <i class="fa-solid fa-calendar-days"></i>
                             <span class="nav-item">Schedule</span>
                         </a>
                     </li>
                     <li><a href="accreditation_form.php">
-                            <i class="fa-solid fa-file"></i>
+                            <i class="fa-brands fa-wpforms"></i>
                             <span class="nav-item">Form</span>
                         </a>
                     </li>
                     <li><a href="scommunication.php">
-                            <i class="fa-solid fa-bell"></i>
+                            <i class="fa-solid fa-comments"></i>
                             <span class="nav-item">Communication</span>
                         </a>
                     </li>
                     <li><a href="report.php">
-                            <i class="fa-solid fa-bell"></i>
+                            <i class="fa-solid fa-flag"></i>
                             <span class="nav-item">Reports</span>
                         </a>
                     </li>
@@ -352,6 +354,51 @@ if(isset($_SESSION['UserID'])) {
         </div>
     
 </body>
+<script>
+    // Function to handle bell icon click event
+document.getElementById('bell-icon').addEventListener('click', function() {
+    // Display the notification popup
+    document.getElementById('notification-popup').style.display = 'block';
+    
+    // AJAX request to fetch and display notifications
+    fetchNotifications();
+});
+
+// AJAX request to periodically check for new notifications
+setInterval(function() {
+    checkForNewNotifications();
+}, 5000); // Check every 5 seconds
+
+// Function to check for new notifications
+function checkForNewNotifications() {
+    $.ajax({
+        url: 'check_for_new_notifications.php',
+        type: 'GET',
+        success: function(response) {
+            if (response === 'true') {
+                // If there are new notifications, change the bell icon color to red
+                document.getElementById('bell-icon').style.color = 'red';
+            } else {
+                // If there are no new notifications, reset the bell icon color
+                document.getElementById('bell-icon').style.color = ''; // Reset to default color
+            }
+        }
+    });
+}
+
+// Function to fetch and display notifications
+function fetchNotifications() {
+    $.ajax({
+        url: 'fetch_notifications.php',
+        type: 'GET',
+        success: function(response) {
+            // Display notifications in the notification popup
+            document.querySelector('.notification-content').innerHTML = response;
+        }
+    });
+}
+</script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 
 <script src="script.js"></script>
 </html>

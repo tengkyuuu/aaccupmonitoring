@@ -64,7 +64,7 @@ $stmt->close();
 
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chat Box</title>
+    <title>Admin Communication</title>
     <link rel="stylesheet" href="style.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -139,14 +139,19 @@ $stmt->close();
         }
         .message.sent {
             text-align: right;
+
         }
         .message.received {
             text-align: left;
+            background-color: #1269f3;
+            width: fit-content;
+            padding: 10px;
+            border-radius: 20px;
         }
         .message .timestamp {
             display: block;
             font-size: 0.8em;
-            color: #888;
+            color: #f0f0f0;
         }
         form {
             display: flex;
@@ -238,49 +243,49 @@ $stmt->close();
                     ?>
                     <h1><?php echo $fullName; ?></h1>
                 </div>
-            <ul>
+                <ul>
                     <li><a href="dashboardadmin.php">
                         <i class="fa-solid fa-gauge"></i>
                         <span class="nav-item">Dashboard</span>
                     </a>
                     </li>
                     <li><a href="user.php">
-                        <i class="fa-solid fa-gear"></i>
+                        <i class="fa-solid fa-user"></i>
                         <span class="nav-item">Users</span>
                     </a>
                     </li>
                     <li><a href="campus.php">
-                        <i class="fa-solid fa-user-graduate"></i>
+                        <i class="fa-solid fa-school"></i>
                         <span class="nav-item">Campuses</span>
                     </a>
                     </li>
                     <li><a href="departments.php">
-                        <i class="fa-solid fa-file"></i>
+                        <i class="fa-solid fa-building-user"></i>
                         <span class="nav-item">Departments  </span>
                     </a>
                     </li>
                     <li><a href="program.php">
-                        <i class="fa-solid fa-bell"></i>
+                        <i class="fa-solid fa-gear"></i>
                         <span class="nav-item">Programs</span>
                     </a>
                     </li>
                     <li><a href="visits.php">
-                        <i class="fa-solid fa-user"></i>
+                        <i class="fa-solid fa-location-dot"></i>
                         <span class="nav-item">Visits</span>
                     </a>
                     </li>
                     <li><a href="documents.php">
-                        <i class="fa-solid fa-user"></i>
+                        <i class="fa-solid fa-file"></i>
                         <span class="nav-item">Documents</span>
                     </a>
                     </li>
                     <li><a href="tasks.php">
-                        <i class="fa-solid fa-user"></i>
+                        <i class="fa-solid fa-list-check"></i>
                         <span class="nav-item">Tasks</span>
                     </a>
                     </li>
                     <li><a href="acommunication.php">
-                        <i class="fa-solid fa-user"></i>
+                        <i class="fa-solid fa-comments"></i>
                         <span class="nav-item">Communication</span>
                     </a>
                     </li>

@@ -80,33 +80,6 @@ if(isset($_SESSION['UserID'])) {
         .directory a:hover {
             color: orangered;
         }
-        table {
-            border-collapse: collapse;
-            margin: 25px 0;
-            font-size: 15px;
-            min-width: 100%;
-            overflow: hidden;
-            border-radius: 5px 5px 0 0;
-        }  
-        table thead tr {
-            color: #fff;
-            background: brown;
-            text-align: left;
-            font-weight: bold;
-        }
-        th, td {
-            padding: 12px 15px;
-            text-align: left;
-        }
-        tbody tr{
-            border-bottom: 1px solid #ddd;
-        }
-        tbody tr:nth-of-type(odd){
-            background: #f3f3f3;
-        }
-        tbody tr:last-of-type{
-            border-bottom: 2px solid brown;
-        }
         .button-bar {
             display: flex;
             justify-content: space-between;
@@ -226,49 +199,48 @@ if(isset($_SESSION['UserID'])) {
                     </a>
                     </li>
                     <li><a href="user.php">
-                        <i class="fa-solid fa-gear"></i>
+                        <i class="fa-solid fa-user"></i>
                         <span class="nav-item">Users</span>
                     </a>
                     </li>
                     <li><a href="campus.php">
-                        <i class="fa-solid fa-user-graduate"></i>
+                        <i class="fa-solid fa-school"></i>
                         <span class="nav-item">Campuses</span>
                     </a>
                     </li>
                     <li><a href="departments.php">
-                        <i class="fa-solid fa-file"></i>
+                        <i class="fa-solid fa-building-user"></i>
                         <span class="nav-item">Departments  </span>
                     </a>
                     </li>
                     <li><a href="program.php">
-                        <i class="fa-solid fa-bell"></i>
+                        <i class="fa-solid fa-gear"></i>
                         <span class="nav-item">Programs</span>
                     </a>
                     </li>
                     <li><a href="visits.php">
-                        <i class="fa-solid fa-user"></i>
+                        <i class="fa-solid fa-location-dot"></i>
                         <span class="nav-item">Visits</span>
                     </a>
                     </li>
                     <li><a href="documents.php">
-                        <i class="fa-solid fa-user"></i>
+                        <i class="fa-solid fa-file"></i>
                         <span class="nav-item">Documents</span>
                     </a>
                     </li>
                     <li><a href="tasks.php">
-                        <i class="fa-solid fa-user"></i>
+                        <i class="fa-solid fa-list-check"></i>
                         <span class="nav-item">Tasks</span>
                     </a>
                     </li>
-                    <li><a href="fcommunication.php">
-                        <i class="fa-solid fa-user"></i>
+                    <li><a href="acommunication.php">
+                        <i class="fa-solid fa-comments"></i>
                         <span class="nav-item">Communication</span>
                     </a>
                     </li>
                 </ul>
             </div>
         </nav>
-
         <div class="main">
             <div id="edit-program-form" class="modal">
                 <div class="modal-content">
@@ -291,10 +263,10 @@ if(isset($_SESSION['UserID'])) {
             <div class="main">
                 <div class="main-title">
                     <i class="fa-solid fa-gauge"></i>
-                    <h2>Staff Users</h2>
+                    <h2>Tasks</h2>
                 </div>
                 <div class="directory">
-                    <p><a href="dashboardadmin.php">Dashboard</a> > Staff Users</p>
+                    <p><a href="dashboardadmin.php">Dashboard</a> > Tasks</p>
                 </div>
                 <div class="main-content">
                     <div class="table-container">

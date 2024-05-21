@@ -29,7 +29,7 @@ if(isset($_SESSION['UserID'])) {
 <head>
 <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Dashboard</title>
+    <title>Visits</title>
     <link rel="stylesheet" href="style.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -66,33 +66,6 @@ if(isset($_SESSION['UserID'])) {
         }
         .directory a:hover {
             color: orangered;
-        }
-        table {
-            border-collapse: collapse;
-            margin: 25px 0;
-            font-size: 15px;
-            min-width: 100%;
-            overflow: hidden;
-            border-radius: 5px 5px 0 0;
-        }  
-        table thead tr {
-            color: #fff;
-            background: brown;
-            text-align: left;
-            font-weight: bold;
-        }
-        th, td {
-            padding: 12px 15px;
-            text-align: left;
-        }
-        tbody tr{
-            border-bottom: 1px solid #ddd;
-        }
-        tbody tr:nth-of-type(odd){
-            background: #f3f3f3;
-        }
-        tbody tr:last-of-type{
-            border-bottom: 2px solid brown;
         }
         .button-bar {
             display: flex;
@@ -213,57 +186,76 @@ if(isset($_SESSION['UserID'])) {
                     </a>
                     </li>
                     <li><a href="user.php">
-                        <i class="fa-solid fa-gear"></i>
+                        <i class="fa-solid fa-user"></i>
                         <span class="nav-item">Users</span>
                     </a>
                     </li>
                     <li><a href="campus.php">
-                        <i class="fa-solid fa-user-graduate"></i>
+                        <i class="fa-solid fa-school"></i>
                         <span class="nav-item">Campuses</span>
                     </a>
                     </li>
                     <li><a href="departments.php">
-                        <i class="fa-solid fa-file"></i>
+                        <i class="fa-solid fa-building-user"></i>
                         <span class="nav-item">Departments  </span>
                     </a>
                     </li>
                     <li><a href="program.php">
-                        <i class="fa-solid fa-bell"></i>
+                        <i class="fa-solid fa-gear"></i>
                         <span class="nav-item">Programs</span>
                     </a>
                     </li>
                     <li><a href="visits.php">
-                        <i class="fa-solid fa-user"></i>
+                        <i class="fa-solid fa-location-dot"></i>
                         <span class="nav-item">Visits</span>
                     </a>
                     </li>
                     <li><a href="documents.php">
-                        <i class="fa-solid fa-user"></i>
+                        <i class="fa-solid fa-file"></i>
                         <span class="nav-item">Documents</span>
                     </a>
                     </li>
                     <li><a href="tasks.php">
-                        <i class="fa-solid fa-user"></i>
+                        <i class="fa-solid fa-list-check"></i>
                         <span class="nav-item">Tasks</span>
                     </a>
                     </li>
-                    <li><a href="fcommunication.php">
-                        <i class="fa-solid fa-user"></i>
+                    <li><a href="acommunication.php">
+                        <i class="fa-solid fa-comments"></i>
                         <span class="nav-item">Communication</span>
                     </a>
                     </li>
                 </ul>
             </div>
         </nav>
-
+        <div id="visitsModal" class="modal">
+            <div class="modal-content">
+                <span class="close" onclick="closeVisitsModal()">&times;</span>
+                <table id="visitsTable">
+                    <thead>
+                        <tr>
+                            <th>Visit Date</th>
+                            <th>Visit Type</th>
+                            <th>Assessment Team</th>
+                            <th>Visit Outcome</th>
+                            <th>Comments</th>
+                            <th>Result</th>
+                        </tr>
+                    </thead>
+                    <tbody id="visitsTableBody">
+                        
+                    </tbody>
+                </table>
+            </div>
+        </div>
         <div class="main">
             <div class="main">
                 <div class="main-title">
                     <i class="fa-solid fa-gauge"></i>
-                    <h2>Staff Users</h2>
+                    <h2>Visits</h2>
                 </div>
                 <div class="directory">
-                    <p><a href="dashboardadmin.php">Dashboard</a> > Staff Users</p>
+                    <p><a href="dashboardadmin.php">Dashboard</a> > Visits</p>
                 </div>
                 <div class="main-content">
                     <div class="table-container">
@@ -276,7 +268,6 @@ if(isset($_SESSION['UserID'])) {
                                 <th>Accreditation Status</th> <!-- Add the Actions table header -->
                                 <th>Accreditation Level</th>
                                 <th>Results</th>
-                                <th>Actions</th>
                             </tr>
                         </thead>
                             <tbody>
@@ -291,7 +282,6 @@ if(isset($_SESSION['UserID'])) {
                                 // Execute the query
                                 $result = $conn->query($sql);
 
-                                // Display program data in the table
                                 if ($result->num_rows > 0) {
                                     while ($row = $result->fetch_assoc()) {
                                         echo "<tr>";
@@ -299,8 +289,13 @@ if(isset($_SESSION['UserID'])) {
                                         echo "<td>" . $row["DepartmentName"] . "</td>"; // Display department name
                                         echo "<td>" . $row["AccreditationStatus"] . "</td>"; // Display accreditation status
                                         echo "<td>" . $row["AccreditationLevel"] . "</td>"; // Display accreditation level
-                                        // Add Edit and Delete buttons
-                                        echo "<td><button onclick=\"toggleEditForm('" . $row["ProgramID"] . "', '" . $row["ProgramName"] . "', '" . $row["DepartmentName"] . "', '" . $row["Level"] . "', '" . $row["AccreditationStatus"] . "', '" . $row["AccreditationLevel"] . "')\">Edit</button><button onclick=\"confirmDelete('" . $row["ProgramID"] . "')\">Delete</button></td>";
+                                        
+                                        $programId = $row["ProgramID"];
+                                        
+                                        
+                                        // View Visits button
+                                        echo "<td><button onclick=\"showAccreditationVisits('" . $programId . "')\">View Visits</button></td>";
+                                        
                                         echo "</tr>";
                                     }
                                 } else {
@@ -318,42 +313,69 @@ if(isset($_SESSION['UserID'])) {
         </div>
     </section>
     <script>
-        // Function to prompt user for confirmation before deletion
-        function confirmDelete(code) {
-            var confirmDelete = confirm("Are you sure you want to delete this program?");
-            if (confirmDelete) {
-                // If user confirms, redirect to delete_program.php with program code
-                window.location.href = "delete_program.php?code=" + code;
+      function showAccreditationVisits(programId) {
+    console.log("Fetching visits for Program ID:", programId);
+
+    // Show the modal
+    var modal = document.getElementById("visitsModal");
+    modal.style.display = "block";
+
+    // Make an asynchronous request to fetch accreditation visits data
+    fetch("fetch_visits.php?programId=" + programId)
+        .then(function(response) {
+            if (!response.ok) {
+                throw new Error('Network response was not ok ' + response.statusText);
             }
-        }
+            return response.json();
+        })
+        .then(function(visitsData) {
+            console.log("Visits data received:", visitsData);
+            var tbody = document.getElementById("visitsTableBody");
+            tbody.innerHTML = ""; // Clear existing table body content
 
-        // Function to toggle visibility of the edit program form
-        function toggleEditForm(studentID, fullName, email, program, currentYear) {
-            var editProgramForm = document.getElementById("edit-program-form");
-            editProgramForm.style.display = "block";
-            
-            // Populate hidden field with studentID
-            var editIDField = document.getElementById("edit-student-id");
-            editIDField.value = studentID;
-            
-            // Populate input fields with current values
-            var editFullNameField = document.getElementById("edit-full-name");
-            editFullNameField.value = fullName;
-            
-            var editEmailField = document.getElementById("edit-email");
-            editEmailField.value = email;
-            
-            var editProgramField = document.getElementById("edit-program");
-            editProgramField.value = program;
-            
-            var editYearField = document.getElementById("edit-year");
-            editYearField.value = currentYear;
-        }
+            // Check if visitsData is empty
+            if (visitsData.length === 0) {
+                var emptyRow = document.createElement("tr");
+                emptyRow.innerHTML = "<td colspan='6'>No visits found</td>";
+                tbody.appendChild(emptyRow);
+            } else {
+                // Populate the table with fetched data
+                visitsData.forEach(function(visit) {
+                    var row = document.createElement("tr");
+                    row.innerHTML = "<td>" + visit.date + "</td>" +
+                        "<td>" + visit.type + "</td>" +
+                        "<td>" + visit.assessmentTeam + "</td>" +
+                        "<td>" + visit.outcome + "</td>" +
+                        "<td>" + visit.comments + "</td>" +
+                        "<td><a href='" + visit.fileURL + "' target='_blank'>View Report</a></td>"; // Add the fileURL link
+                    tbody.appendChild(row);
+                });
+            }
+        })
+        .catch(function(error) {
+            console.error("Error fetching accreditation visits:", error);
+        });
+}
 
-        function closeEditForm() {
-            var editProgramForm = document.getElementById("edit-program-form");
-            editProgramForm.style.display = "none";
-        }
+// Function to close the accreditation visits modal
+function closeVisitsModal() {
+    var modal = document.getElementById("visitsModal");
+    modal.style.display = "none";
+}
+
+// Attach the event listener to the close button
+document.querySelector(".close").addEventListener("click", closeVisitsModal);
+
+// Close the modal when clicking outside of it
+window.onclick = function(event) {
+    var modal = document.getElementById("visitsModal");
+    if (event.target == modal) {
+        modal.style.display = "none";
+    }
+}
+
+</script>
+
     </script>
     <script>
         function searchTable() {

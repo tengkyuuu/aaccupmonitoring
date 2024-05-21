@@ -33,28 +33,133 @@ if (isset($_SERVER['HTTP_REFERER'])) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Edit Profile</title>
-    <link href="https://cdn.jsdelivr.net/npm/cropperjs/dist/cropper.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/cropperjs/dist/cropper.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+        
+        html, body {
+            height: 100%;
+            background: #18191A;
+            color: #333;
+        }
+
+        .container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100%;
+        }
+
+        .form-popup {
+            max-width: 600px;
+            width: 100%;
+            background: #fff;
+            border: 2px solid #fff;
+            border-radius: 20px;
+            box-shadow: 0 20px 35px rgba(0, 0.1, 0.9);
+            padding: 20px;
+            text-align: center;
+        }
+
+        .form-popup h2 {
+            margin-bottom: 20px;
+            font-size: 24px;
+        }
+
+        .form-popup img {
+            width: 100px;
+            border-radius: 50%;
+            margin-bottom: 20px;
+        }
+
+        .form-popup .input-field {
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .form-popup .input-field input,
+        .form-popup .input-field select {
+            width: 100%;
+            padding: 10px;
+            font-size: 1rem;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            outline: none;
+        }
+
+        .form-popup .input-field label {
+            position: absolute;
+            top: 50%;
+            left: 15px;
+            color: #666;
+            pointer-events: none;
+            transform: translateY(-50%);
+            transition: 0.2s ease;
+        }
+
+        .form-popup .input-field input:focus {
+            border-color: #0080ff;
+        }
+
+        .form-popup .input-field input:is(:focus, :valid) {
+            padding: 16px 15px 0;
+        }
+
+        .form-popup .input-field input:is(:focus, :valid) ~ label {
+            color: #0080ff;
+            font-size: 0.75rem;
+            transform: translateY(-120%);
+        }
+
+        .form-popup button {
+            width: 100%;
+            padding: 14px 0;
+            font-size: 1rem;
+            font-weight: 500;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+            background: black;
+            color: #fff;
+            transition: background 0.2s ease;
+        }
+
+        .form-popup button:hover {
+            background: #0080ff;
+        }
+    </style>
 </head>
 
 <body>
-<h2>Edit Profile</h2>
-    <form id="edit-profile-form" action="update_profile.php" method="post" enctype="multipart/form-data">
-        <label for="profile_image">Profile Image:</label>
-        <input type="file" name="profile_image" id="profile_image"><br><br>
-        <div>
-            <label for="aspect_ratio">Crop Aspect Ratio:</label>
-            <select name="aspect_ratio" id="aspect_ratio">
-                <option value="1">Square</option>
-                <!-- You can add more aspect ratios here if needed -->
-            </select>
-        </div><br>
-        <img id="preview" src="<?php echo $profileImage; ?>" alt="Profile Image" width="100"><br><br>
-        <label for="first_name">First Name:</label>
-        <input type="text" name="first_name" id="first_name" value="<?php echo isset($firstName) ? $firstName : ''; ?>"><br><br>
-        <label for="last_name">Last Name:</label>
-        <input type="text" name="last_name" id="last_name" value="<?php echo isset($lastName) ? $lastName : ''; ?>"><br><br>
-        <button type="submit" name="submit">Save Changes</button>
-    </form>
+    <div class="container">
+        <div class="form-popup">
+            <h2>Edit Profile</h2>
+            <form id="edit-profile-form" action="update_profile.php" method="post" enctype="multipart/form-data">
+                <img id="preview" src="<?php echo $profileImage; ?>" alt="Profile Image"><br><br>
+                <div class="input-field">
+                    <input type="file" name="profile_image" id="profile_image">
+                    <label for="profile_image">Profile Image</label>
+                </div>
+                <div class="input-field">
+                    <input type="text" name="first_name" id="first_name" value="<?php echo isset($firstName) ? $firstName : ''; ?>" required>
+                    <label for="first_name">First Name</label>
+                </div>
+                <div class="input-field">
+                    <input type="text" name="last_name" id="last_name" value="<?php echo isset($lastName) ? $lastName : ''; ?>" required>
+                    <label for="last_name">Last Name</label>
+                </div>
+                <button type="submit" name="submit">Save Changes</button>
+            </form>
+        </div>
+    </div>
 
     <script src="https://cdn.jsdelivr.net/npm/cropperjs"></script>
     <script>
@@ -74,7 +179,7 @@ if (isset($_SERVER['HTTP_REFERER'])) {
                         cropper.destroy();
                     }
                     cropper = new Cropper(preview, {
-                        aspectRatio: parseInt(document.getElementById('aspect_ratio').value),
+                        aspectRatio: 1,
                         viewMode: 2,
                         autoCropArea: 1,
                     });
